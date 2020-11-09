@@ -5,6 +5,9 @@ from tensorflow import keras
 from tensorflow.keras import layers
 
 
+
+
+
 # Model
 
 model = keras.Sequential(
@@ -63,9 +66,9 @@ def grad(model, inputs, targets):
 
 # Optimiser Loop
 
-num_epochs = 1
+num_epochs = 1#192
 optimizer = tf.keras.optimizers.SGD(learning_rate=0.01)
-
+print("\n")
 
 for epoch in range(num_epochs):
   # Accuracy Calculations
@@ -84,7 +87,8 @@ for epoch in range(num_epochs):
     epoch_accuracy.update_state(y, model(x, training=True))
 
 
-  print("Epoch {:03d}: Loss: {:.3f}, Accuracy: {:.3%}".format(epoch, epoch_loss_avg.result(), epoch_accuracy.result())) if epoch % 32 == 0 else None
+  print("Epoch {:03d}    Loss: {:.3f}    Accuracy: {:.3%}".format(epoch, epoch_loss_avg.result(), epoch_accuracy.result())) if epoch % 32 == 0 else None
+print("\n")
 
 
 
@@ -92,21 +96,23 @@ for epoch in range(num_epochs):
 
 # Use Model
 
-test_dataset = tf.data.experimental.make_csv_dataset(
-  "test.csv",
-  1,
-  column_names=["age", "class"],
-  label_name="class",
-  num_epochs=1,
-  shuffle=False
-).map(pack_features_vector)
+class_names = {
+  1 : "tiny",
+  2 : "smol",
+  3 : "regular",
+  4 : "old",
+  5 : "almost dead"
+}
 
 
-for (x, y) in test_dataset:
-  logits = model(x, training=False)
-  prediction = tf.argmax(logits, axis=1, output_type=tf.int32)
+values = [0, 33, 120, 15]
+predict_dataset = tf.convert_to_tensor([[i] for i in values])
+predictions = model(predict_dataset, training=False)
 
-  print(x)
-  print(prediction)
-  print(y)
-  print()
+
+for i, logits in enumerate(predictions):
+  class_idx = tf.argmax(logits).numpy()
+  p = tf.nn.softmax(logits)[class_idx]
+  name = class_names[class_idx]
+
+  print("{:3d} years is {}{}({:4.1f}%)".format(values[i], name, " "*(24-len(name)), 100*p))
