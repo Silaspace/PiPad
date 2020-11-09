@@ -42,16 +42,6 @@ features, labels = next(iter(train_dataset))
 
 
 
-# Call model
-#predictions = model(features)
-#probability = tf.nn.softmax(predictions)
-#print("Prediction: {}".format(tf.argmax(predictions, axis=1)))
-#print("    Labels: {}".format(labels))
-
-
-
-
-
 # Cost Function
 
 loss_object = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
@@ -66,18 +56,6 @@ def grad(model, inputs, targets):
   with tf.GradientTape() as tape:
     loss_value = loss(model, inputs, targets, training=True)
   return loss_value, tape.gradient(loss_value, model.trainable_variables)
-#l = loss(model, features, labels, training=False)
-
-
-
-
-
-# Optimiser
-#optimizer = tf.keras.optimizers.SGD(learning_rate=0.01)
-#loss_value, grads = grad(model, features, labels)
-#print("Step: {}, Loss: {}".format(optimizer.iterations.numpy(), loss_value.numpy()))
-#optimizer.apply_gradients(zip(grads, model.trainable_variables))
-#print("Step: {},         Loss: {}".format(optimizer.iterations.numpy(), loss(model, features, labels, training=True).numpy()))
 
 
 
