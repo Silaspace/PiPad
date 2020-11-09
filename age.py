@@ -66,7 +66,7 @@ def grad(model, inputs, targets):
 
 # Optimiser Loop
 
-num_epochs = 1#192
+num_epochs = 192
 optimizer = tf.keras.optimizers.SGD(learning_rate=0.01)
 print("\n")
 
