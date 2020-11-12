@@ -1,4 +1,3 @@
-import os
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
@@ -66,7 +65,7 @@ def grad(model, inputs, targets):
 
 # Optimiser Loop
 
-num_epochs = 192
+num_epochs = 4
 optimizer = tf.keras.optimizers.SGD(learning_rate=0.01)
 print("\n")
 
@@ -87,7 +86,7 @@ for epoch in range(num_epochs):
     epoch_accuracy.update_state(y, model(x, training=True))
 
 
-  print("Epoch {:03d}    Loss: {:.3f}    Accuracy: {:.3%}".format(epoch, epoch_loss_avg.result(), epoch_accuracy.result())) if epoch % 32 == 0 else None
+  print("Epoch {:03d}    Loss: {:.3f}    Accuracy: {:.3%}".format(epoch, epoch_loss_avg.result(), epoch_accuracy.result()))# if epoch % 32 == 0 else None
 print("\n")
 
 
