@@ -65,14 +65,14 @@ def grad(model, inputs, targets):
 
 # Optimiser Loop
 
-num_epochs = 4
+num_epochs = 1
 optimizer = tf.keras.optimizers.SGD(learning_rate=0.01)
 print("\n")
 
 for epoch in range(num_epochs):
   # Accuracy Calculations
-  epoch_loss_avg = tf.keras.metrics.Mean()
-  epoch_accuracy = tf.keras.metrics.SparseCategoricalAccuracy()
+  #epoch_loss_avg = tf.keras.metrics.Mean()
+  #epoch_accuracy = tf.keras.metrics.SparseCategoricalAccuracy()
 
 
   for x, y in train_dataset:
@@ -82,11 +82,11 @@ for epoch in range(num_epochs):
 
 
     # Track progress
-    epoch_loss_avg.update_state(loss_value)
-    epoch_accuracy.update_state(y, model(x, training=True))
+    #epoch_loss_avg.update_state(loss_value)
+    #epoch_accuracy.update_state(y, model(x, training=True))
 
 
-  print("Epoch {:03d}    Loss: {:.3f}    Accuracy: {:.3%}".format(epoch, epoch_loss_avg.result(), epoch_accuracy.result()))# if epoch % 32 == 0 else None
+  #print("Epoch {:03d}    Loss: {:.3f}    Accuracy: {:.3%}".format(epoch, epoch_loss_avg.result(), epoch_accuracy.result()))# if epoch % 32 == 0 else None
 print("\n")
 
 
@@ -105,7 +105,7 @@ class_names = {
 
 
 values = [0, 33, 120, 15]
-predict_dataset = tf.convert_to_tensor([[i] for i in values])
+predict_dataset = tf.convert_to_tensor(  [[i] for i in values]  )
 predictions = model(predict_dataset, training=False)
 
 
