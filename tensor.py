@@ -1,8 +1,42 @@
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
-
 from tensorflow.keras.datasets import mnist
+
+import matplotlib.pyplot as plt
+import numpy as np
+import argparse
+
+"""
+def load
+"""
+
+def load_az_dataset(datasetPath):
+	data=[]
+	labels=[]
+	for row in open(datasetPath):
+		row=row.split(",")
+		label=int(row[0])
+		image=np.array([int(x) for x in row[1:]], dtype="unit8")
+		image=image.reshape((28,28))
+		data.append(image)
+		labels.append(label)
+	data=np.array(data, dtype="float32")
+	labels = np.array(labels, dtype="int")
+
+	return(data, labels)
+
+def load_mnist_dataset():
+	((trainData, trainLabels), (testData, testLabels)) = mnist.load_data()
+	data = np.vstack([trainData, testData])
+	labels = np.hstack([trainLabels, testLabels])
+	return (data,labels)
+
+"""
+def load
+"""
+
+#model
 
 model = keras.Sequential(
 	[
@@ -13,19 +47,14 @@ model = keras.Sequential(
 	]
 )
 
-def load_mnist_dataset():
-	((trainData, trainLabels), (testData, testLabels)) = mnist.load_data()
-	data = np.vstack([trainData, testData])
-	labels = np.hstack([trainLabels, testLabels])
-	return (data,labels)
+#model
 
-train_dataset = tf.data.experimental.make_csv_dataset(
-	"dataset_J",
-	32,
-	coloumn_names = ["col1","col2"],
-	label_name = "col2",
-	num_epochs = 1
-).map(load_mnist_dataset)
+ap = argparse.ArgumentParser()
+ap.add_argument("-a", "--az", required=True, help="path to A-Z dataset")
+ap.add_argument("-m","--model", type=str, required=True, help="path to output trained handwriting recognition model")
+ap.add_argument("-p","--plot", type=str, default="plot.png", help="path to output training history file")
+args=vars(ap.parse_args())
 
-data, labels = next(iter(train_dataset))
+print(("[INFO] loading datasets..."))
+(digitsData, digitsLabels) = load_mnist_dataset()
 
