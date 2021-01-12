@@ -4,6 +4,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTextEdit, QMainWindow, QAction, QMenu, QApplication, QToolBar
 from PyQt5.QtGui import QIcon
 
+import ocr
 
 
 
@@ -67,6 +68,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.initUI()
         self.penWidth = 4
         self.canvas = Canvas()
+        #Alex, where did Canvas come from? I don't see it defined and there seems to be very little documentation on it.. I can't find out it's attributes or methods.
         
         self.w = QtWidgets.QWidget()
         self.h = QtWidgets.QVBoxLayout()
@@ -91,12 +93,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addToolBar(Qt.RightToolBarArea,toolbar)
         toolbar.addSeparator()
 
-        self.nextPageButton = QAction(QIcon('NewPageIcon.PNG'),'Next/New page',self)
+        self.nextPageButton = QAction(QIcon('resources/NewPageIcon.PNG'),'Next/New page',self)
         self.nextPageButton.triggered.connect(self.NextPage)
         toolbar.addAction(self.nextPageButton)
         toolbar.addSeparator()
 
-        self.lastPageButton = QAction(QIcon('InvalidLastPageIcon.PNG'),'Previous page',self)
+        self.lastPageButton = QAction(QIcon('resources/InvalidLastPageIcon.PNG'),'Previous page',self)
         self.lastPageButton.triggered.connect(self.LastPage)
         toolbar.addAction(self.lastPageButton)
         toolbar.addSeparator()
@@ -120,7 +122,7 @@ class MainWindow(QtWidgets.QMainWindow):
         nextPage = current +1
         if current != len(self.pages)-1:
             if nextPage == len(self.pages)-1:
-                self.nextPageButton.setIcon(QIcon('NewPageIcon.PNG'))
+                self.nextPageButton.setIcon(QIcon('resources/NewPageIcon.PNG'))
             self.l.setCurrentIndex(nextPage)
         else:
             newPage = QTextEdit()
@@ -128,26 +130,35 @@ class MainWindow(QtWidgets.QMainWindow):
             self.pages.append(newPage)
             self.l.setCurrentIndex(nextPage)
         #self.pageDisplay.setText(nextPage+1,'/',len(self.pages))
-        self.lastPageButton.setIcon(QIcon('LastPageIcon.PNG'))
+        self.lastPageButton.setIcon(QIcon('resources/LastPageIcon.PNG'))
 
     def LastPage(self):
         current = self.l.currentIndex()
         if current != 0:
             self.l.setCurrentIndex(current-1)
-            self.nextPageButton.setIcon(QIcon('NextPageIcon.PNG'))
+            self.nextPageButton.setIcon(QIcon('resources/NextPageIcon.PNG'))
             #self.pageDisplay.setText(current,'/',len(self.pages))
             #if lastPage-1 == 0:
-                #self.lastPageButton.setIcon(QIcon('InvalidLastPageIcon.PNG'))
+                #self.lastPageButton.setIcon(QIcon('resources/Invalidresources/LastPageIcon.PNG'))
 
     def BarDisplayUpdate(self):
         current = self.l.currentIndex()
         if current == 0:
-            self.lastPageButton.setIcon(QIcon('InvalidLastPageIcon.PNG'))
+            self.lastPageButton.setIcon(QIcon('resources/InvalidLastPageIcon.PNG'))
         newPageDisplay = str(current+1)+' / '+str(len(self.pages))
         self.pageDisplay.setText(newPageDisplay)
         
     def ReadText(self):
         #SAM AND AIDAN STUFF
+
+        # first extract data from canvas
+        # call our ocr function
+        # update text as needed
+        # example below
+        # ------------------------------
+        # data = image_from_canvas
+        # text = ocr.process(data)
+
         self.canvas.reset()
     
         
