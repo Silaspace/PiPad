@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QTextEdit, QMainWindow, QAction, QMenu, QApplication
 from PyQt5.QtGui import QIcon, QPixmap
 from PIL import ImageGrab, ImageShow
 
-
+import ocr
 
 class Canvas(QtWidgets.QLabel):
 
@@ -93,12 +93,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addToolBar(Qt.RightToolBarArea,toolbar)
         toolbar.addSeparator()
 
-        self.nextPageButton = QAction(QIcon('NewPageIcon.PNG'),'Next/New page',self)
+        self.nextPageButton = QAction(QIcon('resources/NewPageIcon.PNG'),'Next/New page',self)
         self.nextPageButton.triggered.connect(self.NextPage)
         toolbar.addAction(self.nextPageButton)
         toolbar.addSeparator()
 
-        self.lastPageButton = QAction(QIcon('InvalidLastPageIcon.PNG'),'Previous page',self)
+        self.lastPageButton = QAction(QIcon('resources/InvalidLastPageIcon.PNG'),'Previous page',self)
         self.lastPageButton.triggered.connect(self.LastPage)
         toolbar.addAction(self.lastPageButton)
         toolbar.addSeparator()
@@ -107,7 +107,7 @@ class MainWindow(QtWidgets.QMainWindow):
         toolbar.addWidget(self.pageDisplay)
         toolbar.addSeparator()
 
-        self.interpretButton = QAction(QIcon('InterpretIcon.PNG'),'Interpret',self)
+        self.interpretButton = QAction(QIcon('resources/InterpretIcon.PNG'),'Interpret',self)
         self.interpretButton.triggered.connect(self.ReadText)
         toolbar.addAction(self.interpretButton)
                                        
@@ -122,7 +122,7 @@ class MainWindow(QtWidgets.QMainWindow):
         nextPage = current +1
         if current != len(self.pages)-1:
             if nextPage == len(self.pages)-1:
-                self.nextPageButton.setIcon(QIcon('NewPageIcon.PNG'))
+                self.nextPageButton.setIcon(QIcon('resources/NewPageIcon.PNG'))
             self.l.setCurrentIndex(nextPage)
         else:
             newPage = QTextEdit()
@@ -130,39 +130,40 @@ class MainWindow(QtWidgets.QMainWindow):
             self.pages.append(newPage)
             self.l.setCurrentIndex(nextPage)
         #self.pageDisplay.setText(nextPage+1,'/',len(self.pages))
-        self.lastPageButton.setIcon(QIcon('LastPageIcon.PNG'))
+        self.lastPageButton.setIcon(QIcon('resources/LastPageIcon.PNG'))
 
     def LastPage(self):
         current = self.l.currentIndex()
         if current != 0:
             self.l.setCurrentIndex(current-1)
-            self.nextPageButton.setIcon(QIcon('NextPageIcon.PNG'))
+            self.nextPageButton.setIcon(QIcon('resources/NextPageIcon.PNG'))
             #self.pageDisplay.setText(current,'/',len(self.pages))
             #if lastPage-1 == 0:
-                #self.lastPageButton.setIcon(QIcon('InvalidLastPageIcon.PNG'))
+                #self.lastPageButton.setIcon(QIcon('resources/InvalidLastPageIcon.PNG'))
 
     def BarDisplayUpdate(self):
         current = self.l.currentIndex()
         if current == 0:
-            self.lastPageButton.setIcon(QIcon('InvalidLastPageIcon.PNG'))
+            self.lastPageButton.setIcon(QIcon('resources/InvalidLastPageIcon.PNG'))
         newPageDisplay = str(current+1)+' / '+str(len(self.pages))
         self.pageDisplay.setText(newPageDisplay)
         
     def ReadText(self):
-        #SAM AND AIDAN STUFF
-        print('a')
-        global a
-        a = ImageGrab.grab(bbox=(200,480,970,800))
-        print(a)
-        print('b')
+        global data
+        data = ImageGrab.grab(bbox=(200,480,970,800))
+        text = ocr.process(data)
+        print(data)
+        print(text)
         self.canvas.reset()
         
 
     
 def main():
-    app = QApplication(sys.argv)
-    ex = MainWindow()
-    sys.exit(app.exec_())
+    with open("styles.css", "r") as f:
+        app = QApplication(sys.argv)
+        ex = MainWindow()
+        ex.setStyleSheet(f.read())
+        sys.exit(app.exec_())
 
 if __name__ == '__main__':
     main()
