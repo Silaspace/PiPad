@@ -6,8 +6,6 @@ from PyQt5.QtGui import QIcon
 
 import ocr
 
-
-
 class Canvas(QtWidgets.QLabel):
 
     def __init__(self):
@@ -68,7 +66,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.initUI()
         self.penWidth = 4
         self.canvas = Canvas()
-        #Alex, where did Canvas come from? I don't see it defined and there seems to be very little documentation on it.. I can't find out it's attributes or methods.
         
         self.w = QtWidgets.QWidget()
         self.h = QtWidgets.QVBoxLayout()
@@ -172,6 +169,10 @@ if __name__ == '__main__':
 
 
 app = QtWidgets.QApplication(sys.argv)
+
+with open("styles.css", "r") as f:
+    app.setStyleSheet(f.read())
+
 window = MainWindow()
 window.show()
 app.exec_()
