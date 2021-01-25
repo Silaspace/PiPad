@@ -160,19 +160,17 @@ class MainWindow(QtWidgets.QMainWindow):
     
         
 def main():
-    app = QApplication(sys.argv)
-    ex = MainWindow()
-    sys.exit(app.exec_())
+    with open("styles.css", "r") as f:
+        app = QApplication(sys.argv)
+        ex = MainWindow()
+        ex.setStyleSheet(f.read())
+        sys.exit(app.exec_())
 
 if __name__ == '__main__':
     main()
 
 
 app = QtWidgets.QApplication(sys.argv)
-
-with open("styles.css", "r") as f:
-    app.setStyleSheet(f.read())
-
 window = MainWindow()
 window.show()
 app.exec_()
