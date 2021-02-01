@@ -1,75 +1,59 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import Qt, QFile, QIODevice
-from PyQt5.QtWidgets import QTextEdit, QMainWindow, QAction, QMenu, QApplication, QToolBar
-from PyQt5.QtGui import QIcon, QPixmap
-from PIL import ImageGrab, ImageShow
+from PyQt5.QtCore import Qt, QIODevice, QBuffer
+from PyQt5.QtGui import QIcon, QImage, QPainter, QPainterPath, QPen
+from PyQt5.QtWidgets import QTextEdit, QMainWindow, QAction, QApplication, QToolBar
 
-import ocr
+import pytesseract
+from PIL import Image
+from io import BytesIO
 
-class Canvas(QtWidgets.QLabel):
-
-    def __init__(self):
+class Canvas(QtWidgets.QWidget):
+    def __init__(self, parent=None):
         super().__init__()
-        pixmap = QPixmap(750,300)
-        pixmap.fill(QtGui.QColor('white'))
-        self.setPixmap(pixmap)
-        self.penWidth = 4
+        self.setAttribute(Qt.WA_StaticContents)
+        self.myPenWidth = 5
+        self.myPenColor = Qt.black
+        self.image = QImage(750, 300, QImage.Format_RGB32)
+        self.path = QPainterPath()
+        self.clearImage()
 
-        self.last_x, self.last_y = None, None
-        self.pen_color = QtGui.QColor('black')
+    def setPenColor(self, newColor):
+        self.myPenColor = newColor
 
-    def reset(self):
-        painter = QtGui.QPainter(self.pixmap())
-        p = painter.pen()  #Makes a pen
-        p.setWidth(2)
-        p.setColor(QtGui.QColor('white'))
-        painter.setPen(p)
-        brush = QtGui.QBrush()
-        brush.setColor(QtGui.QColor('white'))
-        brush.setStyle(Qt.SolidPattern)
-        painter.setBrush(brush)
-        painter.drawRect(0,0,750,300)
-        painter.end()
+    def setPenWidth(self, newWidth):
+        self.myPenWidth = newWidth
+
+    def clearImage(self):
+        self.path = QPainterPath()
+        self.image.fill(Qt.white)
         self.update()
 
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.drawImage(event.rect(), self.image, self.rect())
 
-    def set_pen_color(self, c):
-        self.pen_color = QtGui.QColor(c)
+    def mousePressEvent(self, event):
+        self.path.moveTo(event.pos())
 
-    def mouseMoveEvent(self, e):
-        if self.last_x is None: # First event.
-            self.last_x = e.x()
-            self.last_y = e.y()
-            return # Ignore the first time.
-
-        painter = QtGui.QPainter(self.pixmap())
-        p = painter.pen()  #Makes a pen
-        p.setWidth(self.penWidth)
-        p.setColor(self.pen_color)
-        painter.setPen(p)
-        painter.drawLine(self.last_x, self.last_y, e.x(), e.y())
-        painter.end()
+    def mouseMoveEvent(self, event):
+        self.path.lineTo(event.pos())
+        p = QPainter(self.image)
+        p.setPen(QPen(self.myPenColor, self.myPenWidth, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+        p.drawPath(self.path)
+        p.end()
         self.update()
 
-        # Update the origin for next time.
-        self.last_x = e.x()
-        self.last_y = e.y()
-
-    def mouseReleaseEvent(self, e):
-        self.last_x = None
-        self.last_y = None
 
 
 class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.pages = [QTextEdit('Text')]
+        self.pages = [QTextEdit()]
         self.initUI()
         self.penWidth = 4
         self.canvas = Canvas()
-        
         self.w = QtWidgets.QWidget()
         self.h = QtWidgets.QVBoxLayout()
         self.w.setLayout(self.h)
@@ -82,12 +66,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.setCentralWidget(self.w)
         self.l.currentChanged.connect(self.BarDisplayUpdate)
-        print("1")
-
-        print("2")
     
     def initUI(self):
-        print("3")
         toolbar = QToolBar()
         toolbar.setMovable(False)
         self.addToolBar(Qt.RightToolBarArea,toolbar)
@@ -149,12 +129,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pageDisplay.setText(newPageDisplay)
         
     def ReadText(self):
-        global data
-        data = ImageGrab.grab(bbox=(200,480,970,800))
-        text = ocr.process(data)
-        print(data)
-        print(text)
-        self.canvas.reset()
+
+        buffer = QBuffer()
+        buffer.open(QIODevice.ReadWrite)
+        self.canvas.image.save(buffer, "PNG")
+        data = BytesIO(buffer.data())
+        buffer.close()
+
+        img = Image.open(data)
+        text = pytesseract.image_to_string(img, config ='--psm 10')
+
+        self.pages[self.l.currentIndex()].insertPlainText(text)
+        # Inserts unnecessary /n, fix via cursor manipulation
+        self.canvas.clearImage()
         
 
     
@@ -167,10 +154,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    ImageShow.show(a)
-
-    
-##app = QtWidgets.QApplication(sys.argv)
-##window = MainWindow()
-##window.show()
-##app.exec_()
