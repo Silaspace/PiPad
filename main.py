@@ -133,13 +133,11 @@ class MainWindow(QtWidgets.QMainWindow):
         buffer.close()
 
         img = Image.open(data)
-        img.show()
         thresh = 200
         fn = lambda x : 255 if x > thresh else 0
         n_img = img.convert('L').point(fn, mode='1')
-        n_img.show()
-        text = pytesseract.image_to_string(n_img, config ='--psm 10')
 
+        text = pytesseract.image_to_string(n_img, config ='--psm 10')
         self.pages[self.l.currentIndex()].insertPlainText(text.strip())
         self.canvas.clearImage()
         
