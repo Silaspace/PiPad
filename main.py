@@ -133,6 +133,7 @@ class MainWindow(QtWidgets.QMainWindow):
         buffer.close()
 
         img = Image.open(data)
+        #-------------------------#
         text = pytesseract.image_to_string(img, config ='--psm 10')
 
         self.pages[self.l.currentIndex()].insertPlainText(text.strip())
