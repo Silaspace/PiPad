@@ -109,7 +109,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.l.addWidget(newPage)
             self.pages.append(newPage)
             self.l.setCurrentIndex(nextPage)
-        #self.pageDisplay.setText(nextPage+1,'/',len(self.pages))
         self.lastPageButton.setIcon(QIcon('resources/LastPageIcon.PNG'))
 
     def LastPage(self):
@@ -117,11 +116,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if current != 0:
             self.l.setCurrentIndex(current-1)
             self.nextPageButton.setIcon(QIcon('resources/NextPageIcon.PNG'))
-            #self.pageDisplay.setText(current,'/',len(self.pages))
-            #if lastPage-1 == 0:
-                #self.lastPageButton.setIcon(QIcon('resources/InvalidLastPageIcon.PNG'))
-                
-            # Do we still need these comments???
 
     def BarDisplayUpdate(self):
         current = self.l.currentIndex()
@@ -139,10 +133,9 @@ class MainWindow(QtWidgets.QMainWindow):
         buffer.close()
 
         img = Image.open(data)
-        # Space for James :)
         text = pytesseract.image_to_string(img, config ='--psm 10')
 
-        self.pages[self.l.currentIndex()].insertPlainText(text) # Inserts unnecessary /n, fix via cursor manipulation
+        self.pages[self.l.currentIndex()].insertPlainText(text.strip())
         self.canvas.clearImage()
         
 

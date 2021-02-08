@@ -1,12 +1,6 @@
 /* Example CSS */
 /* GUI Team here :D */
 
-
-Canvas {
-  border: 1px solid black;
-  border-radius: 5px;
-}
-
 QTextEdit {
   border: 1px solid black;
   border-radius: 5px;
