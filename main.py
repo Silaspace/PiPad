@@ -133,6 +133,14 @@ class MainWindow(QtWidgets.QMainWindow):
         buffer.close()
 
         img = Image.open(data)
+        
+        from PIL import Image
+        img = Image.open('test_image.png')
+        thresh = 200
+        fn = lambda x : 255 if x > thresh else 0
+        new = img.convert('L').point(fn, mode='1')
+        new.save('black_and_white.png')
+        
         text = pytesseract.image_to_string(img, config ='--psm 10')
 
         self.pages[self.l.currentIndex()].insertPlainText(text.strip())
