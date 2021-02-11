@@ -14,7 +14,7 @@ class Canvas(QtWidgets.QWidget):
         self.setAttribute(Qt.WA_StaticContents)
         self.myPenWidth = 5
         self.myPenColor = Qt.black
-        self.image = QImage(750, 300, QImage.Format_RGB32)
+        self.image = QImage(1000, 300, QImage.Format_RGB32)
         self.path = QPainterPath()
         self.clearImage()
 
@@ -45,6 +45,56 @@ class Canvas(QtWidgets.QWidget):
         self.update()
 
 
+class Keyboard(QtWidgets.QGridLayout):
+    def __init__(self, display, rackStack, *args):
+        super().__init__()
+        self.keys = {}
+        self.display = display
+        self.rackStack = rackStack
+
+        for rowNum, keyRow in enumerate(args):
+            self.makeKeyRow(rowNum, keyRow)
+
+        for num, key in enumerate(['Shift','Space','Backspace']):
+            self.keys[key] = QtWidgets.QPushButton(key)
+            self.addWidget(self.keys[key], 4, 4*(num), 1, 4)
+
+        self.keys['Shift'].clicked.connect(self.Shift)
+        self.keys['Space'].clicked.connect((self.makeKey(' ')))
+        self.keys['Backspace'].clicked.connect(self.Backspace)
+        
+
+    def makeKey(self, key):
+        return lambda: self.display.currentWidget().insertPlainText(key)
+
+    def makeKeyRow(self, rowNum, keyRow):
+        for colNum, key in enumerate(keyRow):
+            self.keys[key] = QtWidgets.QPushButton(key)
+            self.addWidget(self.keys[key], rowNum, colNum)
+            if key == '&&':       #This is completely necessary
+                self.keys['&&'].clicked.connect((self.makeKey('&')))
+            else:
+                self.keys[key].clicked.connect((self.makeKey(key)))
+
+    def Backspace(self):
+        # Greek Question Mark, DO NOT DELETE - ;
+        self.display.currentWidget().insertPlainText(';')
+        text = self.display.currentWidget().toPlainText()
+        delpos = text.find(';')
+        if delpos != 0:
+            self.display.currentWidget().setPlainText(text[delpos+1:])
+            self.display.currentWidget().insertPlainText(text[:delpos-1])
+        else:
+            self.display.currentWidget().setPlainText(text[1:])
+
+    def Shift(self):
+        if self.rackStack.currentIndex() == 1:
+            self.rackStack.setCurrentIndex(2)
+        else:
+            self.rackStack.setCurrentIndex(1)
+        
+        
+
 
 class MainWindow(QtWidgets.QMainWindow):
 
@@ -54,18 +104,36 @@ class MainWindow(QtWidgets.QMainWindow):
         self.initUI()
         self.penWidth = 4
         self.canvas = Canvas()
+        
         self.w = QtWidgets.QWidget()
         self.h = QtWidgets.QVBoxLayout()
         self.w.setLayout(self.h)
-        self.l = QtWidgets.QStackedLayout()
-        self.h.addLayout(self.l)
-        self.l.addWidget(self.pages[0])
+        self.display = QtWidgets.QStackedLayout()
+        self.h.addLayout(self.display)
+        self.display.addWidget(self.pages[0])
         self.h2 = QtWidgets.QStackedLayout()
         self.h.addLayout(self.h2)
         self.h2.addWidget(self.canvas)
+        
+        kb1 = QtWidgets.QWidget()
+        self.normboard = Keyboard(self.display, self.h2,
+                                  '1234567890-=',
+                                  'qwertyuiop[]',
+                                  "asdfghjkl;'#",
+                                  '\zxcvbnm,./`')
+        kb1.setLayout(self.normboard)
+        kb2 = QtWidgets.QWidget()
+        self.shiftboard = Keyboard(self.display, self.h2,
+                                   ['!','"','£','$','%','^','&&','*','(',')','_','+'],
+                                   'QWERTYUIOP{}',
+                                   'ASDFGHJKL:@~',
+                                   '|ZXCVBNM<>?¬')
+        kb2.setLayout(self.shiftboard)
+        self.h2.addWidget(kb1)
+        self.h2.addWidget(kb2)
 
         self.setCentralWidget(self.w)
-        self.l.currentChanged.connect(self.BarDisplayUpdate)
+        self.display.currentChanged.connect(self.BarDisplayUpdate)
     
     def initUI(self):
         toolbar = QToolBar()
@@ -90,6 +158,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.interpretButton = QAction(QIcon('resources/InterpretIcon.PNG'),'Interpret',self)
         self.interpretButton.triggered.connect(self.ReadText)
         toolbar.addAction(self.interpretButton)
+        toolbar.addSeparator()
+
+        self.boardSwitchButton = QAction('Swap Input', self)
+        self.boardSwitchButton.triggered.connect(self.BoardSwitch)
+        toolbar.addAction(self.boardSwitchButton)
+        toolbar.addSeparator()
+
+        self.newLineButton = QAction('New line', self)
+        self.newLineButton.triggered.connect(self.NewLine)
+        toolbar.addAction(self.newLineButton)
                                        
         self.setGeometry(200,200,750,600)
         self.setWindowTitle('Demo')
@@ -97,35 +175,38 @@ class MainWindow(QtWidgets.QMainWindow):
 
         
 
+    def NewLine(self):
+        current = self.display.currentIndex()
+        self.pages[current].insertPlainText('\n')
+
     def NextPage(self):
-        current = self.l.currentIndex()
+        current = self.display.currentIndex()
         nextPage = current +1
         if current != len(self.pages)-1:
             if nextPage == len(self.pages)-1:
                 self.nextPageButton.setIcon(QIcon('resources/NewPageIcon.PNG'))
-            self.l.setCurrentIndex(nextPage)
+            self.display.setCurrentIndex(nextPage)
         else:
             newPage = QTextEdit()
-            self.l.addWidget(newPage)
+            self.display.addWidget(newPage)
             self.pages.append(newPage)
-            self.l.setCurrentIndex(nextPage)
+            self.display.setCurrentIndex(nextPage)
         self.lastPageButton.setIcon(QIcon('resources/LastPageIcon.PNG'))
 
     def LastPage(self):
-        current = self.l.currentIndex()
+        current = self.display.currentIndex()
         if current != 0:
-            self.l.setCurrentIndex(current-1)
+            self.display.setCurrentIndex(current-1)
             self.nextPageButton.setIcon(QIcon('resources/NextPageIcon.PNG'))
 
     def BarDisplayUpdate(self):
-        current = self.l.currentIndex()
+        current = self.display.currentIndex()
         if current == 0:
             self.lastPageButton.setIcon(QIcon('resources/InvalidLastPageIcon.PNG'))
         newPageDisplay = str(current+1)+' / '+str(len(self.pages))
         self.pageDisplay.setText(newPageDisplay)
         
     def ReadText(self):
-
         buffer = QBuffer()
         buffer.open(QIODevice.ReadWrite)
         self.canvas.image.save(buffer, "PNG")
@@ -135,12 +216,17 @@ class MainWindow(QtWidgets.QMainWindow):
         img = Image.open(data)
         thresh = 200
         fn = lambda x : 255 if x > thresh else 0
-        n_img = img.convert('L').point(fn, mode='1')
+        mod = img.convert('L').point(fn, mode='1')
 
-        text = pytesseract.image_to_string(n_img, config ='--psm 10')
-        self.pages[self.l.currentIndex()].insertPlainText(text.strip())
+        text = pytesseract.image_to_string(mod, config ='--psm 10')
+        self.pages[self.display.currentIndex()].insertPlainText(text.strip())
         self.canvas.clearImage()
-        
+
+    def BoardSwitch(self):
+        if self.h2.currentIndex() == 0:
+            self.h2.setCurrentIndex(1)
+        else:
+            self.h2.setCurrentIndex(0)
 
     
 def main():
