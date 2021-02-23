@@ -1,0 +1,10 @@
+/* Example CSS */
+/* GUI Team here :D */
+
+QTextEdit {
+  border: 1px solid black;
+  border-radius: 5px;
+  background-color: rgb(42, 51, 66);
+  color: white;
+  font-size: 16px;
+}
