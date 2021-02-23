@@ -148,13 +148,11 @@ class MainWindow(QtWidgets.QMainWindow):
         toolbar = QToolBar()
         toolbar.setMovable(False)
         self.addToolBar(Qt.LeftToolBarArea,toolbar) # Switched toolbar to left cause it looked cool
-
-        # ALL LABELS ARE OVERLAPPING ASK ALEX FOR HELP FIXING POSITIONING
         
         # Saved Notes
         # ------------------------------------------------------------------------------------- #
-        self.toolbar_head = QtWidgets.QLabel('Saved Notes',self)
-        toolbar.addWidget(self.toolbar_head)
+        self.notes_heading = QtWidgets.QLabel('Saved Notes',self)
+        toolbar.addWidget(self.notes_heading)
         toolbar.addSeparator()
 
         all_saved = ["title", "test", "example"]
@@ -164,41 +162,39 @@ class MainWindow(QtWidgets.QMainWindow):
             self.saved_note_buttons.append(savedNote(i, self))
             self.saved_note_buttons[::-1][0].display.triggered.connect(self.saved_note_buttons[::-1][0].clicked)
             toolbar.addAction(self.saved_note_buttons[::-1][0].display)
-            toolbar.addSeparator()
 
 
         # Pages heading
         # ------------------------------------------------------------------------------------- #
-        self.toolbar_head = QtWidgets.QLabel('Pages',self)
+        self.pages_head = QtWidgets.QLabel('Pages',self)
+        toolbar.addWidget(self.pages_head)
+        toolbar.addSeparator()
 
         self.nextPageButton = QAction(QIcon('resources/NewPageIcon.PNG'),'Next/New page',self)
         self.nextPageButton.triggered.connect(self.NextPage)
         toolbar.addAction(self.nextPageButton)
-        toolbar.addSeparator()
 
         self.lastPageButton = QAction(QIcon('resources/InvalidLastPageIcon.PNG'),'Previous page',self)
         self.lastPageButton.triggered.connect(self.LastPage)
         toolbar.addAction(self.lastPageButton)
-        toolbar.addSeparator()
 
         self.pageDisplay = QtWidgets.QLabel('1 / 1', self)#.setAlignment(Qt.AlignCenter) Trying to center it, not working rn.
         toolbar.addWidget(self.pageDisplay)
-        toolbar.addSeparator()
 
 
         # Special controls heading
         # ------------------------------------------------------------------------------------- #
-        self.toolbar_head = QtWidgets.QLabel('Controls',self)
+        self.controls_head = QtWidgets.QLabel('Controls',self)
+        toolbar.addWidget(self.controls_head)
+        toolbar.addSeparator()
 
         self.interpretButton = QAction(QIcon('resources/InterpretIcon.PNG'),'Interpret',self)
         self.interpretButton.triggered.connect(self.ReadText)
         toolbar.addAction(self.interpretButton)
-        toolbar.addSeparator()
 
         self.boardSwitchButton = QAction('Swap Input', self)
         self.boardSwitchButton.triggered.connect(self.BoardSwitch)
         toolbar.addAction(self.boardSwitchButton)
-        toolbar.addSeparator()
 
         self.newLineButton = QAction('New line', self)
         self.newLineButton.triggered.connect(self.NewLine)
