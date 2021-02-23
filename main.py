@@ -100,7 +100,7 @@ class savedNote:
     def clicked(object, bool):
         print(a)
         print(b)
-        
+
         pass
 
 
@@ -149,11 +149,11 @@ class MainWindow(QtWidgets.QMainWindow):
         toolbar.setMovable(False)
         self.addToolBar(Qt.LeftToolBarArea,toolbar) # Switched toolbar to left cause it looked cool
 
-        # ------------------------------------------------------------------#
-        # Prototype code for GUI save/load
-        # ------------------------------------------------------------------#
-
-        self.toolbar_head = QtWidgets.QLabel('Pages',self)
+        # ALL LABELS ARE OVERLAPPING ASK ALEX FOR HELP FIXING POSITIONING
+        
+        # Saved Notes
+        # ------------------------------------------------------------------------------------- #
+        self.toolbar_head = QtWidgets.QLabel('Saved Notes',self)
         toolbar.addWidget(self.toolbar_head)
         toolbar.addSeparator()
 
@@ -167,7 +167,9 @@ class MainWindow(QtWidgets.QMainWindow):
             toolbar.addSeparator()
 
 
-        # ------------------------------------------------------------------#
+        # Pages heading
+        # ------------------------------------------------------------------------------------- #
+        self.toolbar_head = QtWidgets.QLabel('Pages',self)
 
         self.nextPageButton = QAction(QIcon('resources/NewPageIcon.PNG'),'Next/New page',self)
         self.nextPageButton.triggered.connect(self.NextPage)
@@ -182,6 +184,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pageDisplay = QtWidgets.QLabel('1 / 1', self)#.setAlignment(Qt.AlignCenter) Trying to center it, not working rn.
         toolbar.addWidget(self.pageDisplay)
         toolbar.addSeparator()
+
+
+        # Special controls heading
+        # ------------------------------------------------------------------------------------- #
+        self.toolbar_head = QtWidgets.QLabel('Controls',self)
 
         self.interpretButton = QAction(QIcon('resources/InterpretIcon.PNG'),'Interpret',self)
         self.interpretButton.triggered.connect(self.ReadText)
