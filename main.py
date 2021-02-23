@@ -77,9 +77,9 @@ class Keyboard(QtWidgets.QGridLayout):
                 self.keys[key].clicked.connect((self.makeKey(key)))
 
     def Backspace(self):
-        self.display.currentWidget().insertPlainText('|')
+        self.display.currentWidget().insertPlainText('~|')
         text = self.display.currentWidget().toPlainText()
-        delpos = text.find('|')
+        delpos = text.find('~|')
         if delpos != 0:
             self.display.currentWidget().setPlainText(text[delpos+1:])
             self.display.currentWidget().insertPlainText(text[:delpos-1])
@@ -178,7 +178,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.lastPageButton.triggered.connect(self.LastPage)
         toolbar.addAction(self.lastPageButton)
 
-        self.pageDisplay = QtWidgets.QLabel('1 / 1', self)#.setAlignment(Qt.AlignCenter) Trying to center it, not working rn.
+        self.pageDisplay = QtWidgets.QLabel('1 / 1', self)#.setAlignment(Qt.AlignCenter) Trying to center it (horizontally), not working rn.
         toolbar.addWidget(self.pageDisplay)
 
 
@@ -250,6 +250,7 @@ class MainWindow(QtWidgets.QMainWindow):
         mod = img.convert('L').point(fn, mode='1')
 
         text = pytesseract.image_to_string(mod, config ='--psm 10')
+        text = text.replace("~|", "")
         self.pages[self.display.currentIndex()].insertPlainText(text.strip())
         self.canvas.clearImage()
 
