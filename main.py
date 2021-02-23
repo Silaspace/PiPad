@@ -14,7 +14,7 @@ class Canvas(QtWidgets.QWidget):
         self.setAttribute(Qt.WA_StaticContents)
         self.myPenWidth = 5
         self.myPenColor = Qt.black
-        self.image = QImage(1000, 300, QImage.Format_RGB32)
+        self.image = QImage(1200, 300, QImage.Format_RGB32)
         self.path = QPainterPath()
         self.clearImage()
 
@@ -77,10 +77,9 @@ class Keyboard(QtWidgets.QGridLayout):
                 self.keys[key].clicked.connect((self.makeKey(key)))
 
     def Backspace(self):
-        # Greek Question Mark, DO NOT DELETE - ;
-        self.display.currentWidget().insertPlainText(';')
+        self.display.currentWidget().insertPlainText('|')
         text = self.display.currentWidget().toPlainText()
-        delpos = text.find(';')
+        delpos = text.find('|')
         if delpos != 0:
             self.display.currentWidget().setPlainText(text[delpos+1:])
             self.display.currentWidget().insertPlainText(text[:delpos-1])
@@ -92,8 +91,16 @@ class Keyboard(QtWidgets.QGridLayout):
             self.rackStack.setCurrentIndex(2)
         else:
             self.rackStack.setCurrentIndex(1)
-        
-        
+
+# Still a prototype, for some reason it dislikes me :(
+class savedNote:
+
+    def __init__(title, self):
+        return QAction(title)
+
+    def clicked():
+        pass
+
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -138,8 +145,27 @@ class MainWindow(QtWidgets.QMainWindow):
     def initUI(self):
         toolbar = QToolBar()
         toolbar.setMovable(False)
-        self.addToolBar(Qt.RightToolBarArea,toolbar)
+        self.addToolBar(Qt.LeftToolBarArea,toolbar) # Switched toolbar to left cause it looked cool
+
+        # ------------------------------------------------------------------#
+        # Prototype code for GUI save/load
+        # ------------------------------------------------------------------#
+
+        self.toolbar_head = QtWidgets.QLabel('Pages',self)
+        toolbar.addWidget(self.toolbar_head)
         toolbar.addSeparator()
+
+        all_saved = ["title", "test", "example"]
+        self.saved_note_buttons = []
+
+        #for i in all_saved:
+        #    self.saved_note_buttons.append(savedNote(i))
+        #    self.saved_note_buttons[::-1].triggered.connect(self.saved_note_buttons[::-1].clicked)
+        #    toolbar.addAction(self.self.saved_note_buttons[::-1])
+        #    toolbar.addSeparator()
+
+
+        # ------------------------------------------------------------------#
 
         self.nextPageButton = QAction(QIcon('resources/NewPageIcon.PNG'),'Next/New page',self)
         self.nextPageButton.triggered.connect(self.NextPage)
@@ -151,7 +177,7 @@ class MainWindow(QtWidgets.QMainWindow):
         toolbar.addAction(self.lastPageButton)
         toolbar.addSeparator()
 
-        self.pageDisplay = QtWidgets.QLabel('1 / 1', self)
+        self.pageDisplay = QtWidgets.QLabel('1 / 1', self)#.setAlignment(Qt.AlignCenter) Trying to center it, not working rn.
         toolbar.addWidget(self.pageDisplay)
         toolbar.addSeparator()
 
@@ -170,7 +196,7 @@ class MainWindow(QtWidgets.QMainWindow):
         toolbar.addAction(self.newLineButton)
                                        
         self.setGeometry(200,200,750,600)
-        self.setWindowTitle('Demo')
+        self.setWindowTitle('PiPad')
         self.show()
 
         
