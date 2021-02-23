@@ -92,13 +92,15 @@ class Keyboard(QtWidgets.QGridLayout):
         else:
             self.rackStack.setCurrentIndex(1)
 
-# Still a prototype, for some reason it dislikes me :(
 class savedNote:
 
-    def __init__(title, self):
-        return QAction(title)
+    def __init__(self, title, parent):
+        self.display = QAction(title, parent)
 
-    def clicked():
+    def clicked(object, bool):
+        print(a)
+        print(b)
+        
         pass
 
 
@@ -158,11 +160,11 @@ class MainWindow(QtWidgets.QMainWindow):
         all_saved = ["title", "test", "example"]
         self.saved_note_buttons = []
 
-        #for i in all_saved:
-        #    self.saved_note_buttons.append(savedNote(i))
-        #    self.saved_note_buttons[::-1].triggered.connect(self.saved_note_buttons[::-1].clicked)
-        #    toolbar.addAction(self.self.saved_note_buttons[::-1])
-        #    toolbar.addSeparator()
+        for i in all_saved:
+            self.saved_note_buttons.append(savedNote(i, self))
+            self.saved_note_buttons[::-1][0].display.triggered.connect(self.saved_note_buttons[::-1][0].clicked)
+            toolbar.addAction(self.saved_note_buttons[::-1][0].display)
+            toolbar.addSeparator()
 
 
         # ------------------------------------------------------------------#
