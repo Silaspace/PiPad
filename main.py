@@ -2,7 +2,7 @@ import sys, os
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QIODevice, QBuffer
 from PyQt5.QtGui import QIcon, QImage, QPainter, QPainterPath, QPen
-from PyQt5.QtWidgets import QTextEdit, QMainWindow, QAction, QApplication, QToolBar
+from PyQt5.QtWidgets import QTextEdit, QMainWindow, QAction, QApplication, QToolBar, QSizePolicy
 
 import pytesseract
 from PIL import Image
