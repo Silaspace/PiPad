@@ -1,4 +1,4 @@
-import sys
+import sys, os
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QIODevice, QBuffer
 from PyQt5.QtGui import QIcon, QImage, QPainter, QPainterPath, QPen
@@ -7,6 +7,10 @@ from PyQt5.QtWidgets import QTextEdit, QMainWindow, QAction, QApplication, QTool
 import pytesseract
 from PIL import Image
 from io import BytesIO
+
+# Global Variables
+
+path = os.getcwd() + "/saved/"
 
 class Canvas(QtWidgets.QWidget):
     def __init__(self, parent=None):
@@ -77,9 +81,9 @@ class Keyboard(QtWidgets.QGridLayout):
                 self.keys[key].clicked.connect((self.makeKey(key)))
 
     def Backspace(self):
-        self.display.currentWidget().insertPlainText('~|')
+        self.display.currentWidget().insertPlainText('~¦')
         text = self.display.currentWidget().toPlainText()
-        delpos = text.find('~|')
+        delpos = text.find('~¦')
         if delpos != 0:
             self.display.currentWidget().setPlainText(text[delpos+1:])
             self.display.currentWidget().insertPlainText(text[:delpos-1])
@@ -96,11 +100,9 @@ class savedNote:
 
     def __init__(self, title, parent):
         self.display = QAction(title, parent)
+        self.path = "path/to/file"
 
-    def clicked(object, bool):
-        print(a)
-        print(b)
-
+    def clicked(self, a):
         pass
 
 
@@ -178,6 +180,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.lastPageButton.triggered.connect(self.LastPage)
         toolbar.addAction(self.lastPageButton)
 
+        self.saveButton = QAction('Save',self)
+        self.saveButton.triggered.connect(self.SaveNotes)
+        toolbar.addAction(self.saveButton)
+
         self.pageDisplay = QtWidgets.QLabel('1 / 1', self)#.setAlignment(Qt.AlignCenter) Trying to center it (horizontally), not working rn.
         toolbar.addWidget(self.pageDisplay)
 
@@ -238,13 +244,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pageDisplay.setText(newPageDisplay)
         
     def ReadText(self):
+        # -------------------------------------------------------------- #
+        # Alex Walker have a look below! ------------------------------- #
+
         buffer = QBuffer()
         buffer.open(QIODevice.ReadWrite)
         self.canvas.image.save(buffer, "PNG")
         data = BytesIO(buffer.data())
         buffer.close()
+        img = Image.open(data) # PIL image format
 
-        img = Image.open(data)
+        # -------------------------------------------------------------- #
+
+
         thresh = 200
         fn = lambda x : 255 if x > thresh else 0
         mod = img.convert('L').point(fn, mode='1')
@@ -259,6 +271,13 @@ class MainWindow(QtWidgets.QMainWindow):
             self.h2.setCurrentIndex(1)
         else:
             self.h2.setCurrentIndex(0)
+
+    def SaveNotes(self, a):
+        content = [i.toPlainText() for i in self.pages]
+        name = "".join(content[0].split(" ")[:2])
+
+        with open(path + name, "w") as f:
+            f.write("~|".join(content))
 
     
 def main():
