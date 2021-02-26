@@ -52,6 +52,7 @@ class Canvas(QtWidgets.QWidget):
 class Keyboard(QtWidgets.QGridLayout):
     def __init__(self, display, rackStack, *args):
         super().__init__()
+        self.setSizeConstraint(QtWidgets.QLayout.SetNoConstraint)
         self.keys = {}
         self.display = display
         self.rackStack = rackStack
@@ -61,6 +62,7 @@ class Keyboard(QtWidgets.QGridLayout):
 
         for num, key in enumerate(['Shift','Space','Backspace']):
             self.keys[key] = QtWidgets.QPushButton(key)
+            self.keys[key].setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
             self.addWidget(self.keys[key], 4, 4*(num), 1, 4)
 
         self.keys['Shift'].clicked.connect(self.Shift)
@@ -74,6 +76,7 @@ class Keyboard(QtWidgets.QGridLayout):
     def makeKeyRow(self, rowNum, keyRow):
         for colNum, key in enumerate(keyRow):
             self.keys[key] = QtWidgets.QPushButton(key)
+            self.keys[key].setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
             self.addWidget(self.keys[key], rowNum, colNum)
             if key == '&&':       #This is completely necessary
                 self.keys['&&'].clicked.connect((self.makeKey('&')))
