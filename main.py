@@ -265,7 +265,7 @@ class MainWindow(QtWidgets.QMainWindow):
         mod = img.convert('L').point(fn, mode='1')
 
         text = pytesseract.image_to_string(mod, config ='--psm 10')
-        text = text.replace("~|", "")
+        text = text.replace("~¦", "")
         self.pages[self.display.currentIndex()].insertPlainText(text.strip())
         self.canvas.clearImage()
 
@@ -280,7 +280,7 @@ class MainWindow(QtWidgets.QMainWindow):
         name = "".join(content[0].split(" ")[:2])
 
         with open(path + name, "w") as f:
-            f.write("~|".join(content))
+            f.write("~¦".join(content))
 
     
 def main():
