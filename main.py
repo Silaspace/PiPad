@@ -77,9 +77,9 @@ class Keyboard(QtWidgets.QGridLayout):
                 self.keys[key].clicked.connect((self.makeKey(key)))
 
     def Backspace(self):
-        self.display.currentWidget().insertPlainText('|')
+        self.display.currentWidget().insertPlainText('~|')
         text = self.display.currentWidget().toPlainText()
-        delpos = text.find('|')
+        delpos = text.find('~|')
         if delpos != 0:
             self.display.currentWidget().setPlainText(text[delpos+1:])
             self.display.currentWidget().insertPlainText(text[:delpos-1])
@@ -100,7 +100,7 @@ class savedNote:
     def clicked(object, bool):
         print(a)
         print(b)
-        
+
         pass
 
 
@@ -148,13 +148,11 @@ class MainWindow(QtWidgets.QMainWindow):
         toolbar = QToolBar()
         toolbar.setMovable(False)
         self.addToolBar(Qt.LeftToolBarArea,toolbar) # Switched toolbar to left cause it looked cool
-
-        # ------------------------------------------------------------------#
-        # Prototype code for GUI save/load
-        # ------------------------------------------------------------------#
-
-        self.toolbar_head = QtWidgets.QLabel('Pages',self)
-        toolbar.addWidget(self.toolbar_head)
+        
+        # Saved Notes
+        # ------------------------------------------------------------------------------------- #
+        self.notes_heading = QtWidgets.QLabel('Saved Notes',self)
+        toolbar.addWidget(self.notes_heading)
         toolbar.addSeparator()
 
         all_saved = ["title", "test", "example"]
@@ -164,34 +162,39 @@ class MainWindow(QtWidgets.QMainWindow):
             self.saved_note_buttons.append(savedNote(i, self))
             self.saved_note_buttons[::-1][0].display.triggered.connect(self.saved_note_buttons[::-1][0].clicked)
             toolbar.addAction(self.saved_note_buttons[::-1][0].display)
-            toolbar.addSeparator()
 
 
-        # ------------------------------------------------------------------#
+        # Pages heading
+        # ------------------------------------------------------------------------------------- #
+        self.pages_head = QtWidgets.QLabel('Pages',self)
+        toolbar.addWidget(self.pages_head)
+        toolbar.addSeparator()
 
         self.nextPageButton = QAction(QIcon('resources/NewPageIcon.PNG'),'Next/New page',self)
         self.nextPageButton.triggered.connect(self.NextPage)
         toolbar.addAction(self.nextPageButton)
-        toolbar.addSeparator()
 
         self.lastPageButton = QAction(QIcon('resources/InvalidLastPageIcon.PNG'),'Previous page',self)
         self.lastPageButton.triggered.connect(self.LastPage)
         toolbar.addAction(self.lastPageButton)
-        toolbar.addSeparator()
 
-        self.pageDisplay = QtWidgets.QLabel('1 / 1', self)#.setAlignment(Qt.AlignCenter) Trying to center it, not working rn.
+        self.pageDisplay = QtWidgets.QLabel('1 / 1', self)#.setAlignment(Qt.AlignCenter) Trying to center it (horizontally), not working rn.
         toolbar.addWidget(self.pageDisplay)
+
+
+        # Special controls heading
+        # ------------------------------------------------------------------------------------- #
+        self.controls_head = QtWidgets.QLabel('Controls',self)
+        toolbar.addWidget(self.controls_head)
         toolbar.addSeparator()
 
         self.interpretButton = QAction(QIcon('resources/InterpretIcon.PNG'),'Interpret',self)
         self.interpretButton.triggered.connect(self.ReadText)
         toolbar.addAction(self.interpretButton)
-        toolbar.addSeparator()
 
         self.boardSwitchButton = QAction('Swap Input', self)
         self.boardSwitchButton.triggered.connect(self.BoardSwitch)
         toolbar.addAction(self.boardSwitchButton)
-        toolbar.addSeparator()
 
         self.newLineButton = QAction('New line', self)
         self.newLineButton.triggered.connect(self.NewLine)
@@ -247,6 +250,7 @@ class MainWindow(QtWidgets.QMainWindow):
         mod = img.convert('L').point(fn, mode='1')
 
         text = pytesseract.image_to_string(mod, config ='--psm 10')
+        text = text.replace("~|", "")
         self.pages[self.display.currentIndex()].insertPlainText(text.strip())
         self.canvas.clearImage()
 
