@@ -11,7 +11,7 @@ from io import BytesIO
 # Global Variables
 
 path = os.getcwd() + "/saved/"
-control = ""
+control = "~~~"
 
 class Canvas(QtWidgets.QWidget):
     def __init__(self, parent=None):
