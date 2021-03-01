@@ -11,13 +11,14 @@ from io import BytesIO
 # Global Variables
 
 path = os.getcwd() + "/saved/"
+control = ""
 
 class Canvas(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super().__init__()
         self.setAttribute(Qt.WA_StaticContents)
         self.myPenWidth = 5
-        self.myPenColor = Qt.black
+        self.myPenColor = Qt.white
         self.image = QImage(1200, 300, QImage.Format_RGB32)
         self.path = QPainterPath()
         self.clearImage()
@@ -30,7 +31,7 @@ class Canvas(QtWidgets.QWidget):
 
     def clearImage(self):
         self.path = QPainterPath()
-        self.image.fill(Qt.white)
+        self.image.fill(Qt.black)
         self.update()
 
     def paintEvent(self, event):
@@ -84,9 +85,9 @@ class Keyboard(QtWidgets.QGridLayout):
                 self.keys[key].clicked.connect((self.makeKey(key)))
 
     def Backspace(self):
-        self.display.currentWidget().insertPlainText('~¦')
+        self.display.currentWidget().insertPlainText(control)
         text = self.display.currentWidget().toPlainText()
-        delpos = text.find('~¦')
+        delpos = text.find(control)
         if delpos != 0:
             self.display.currentWidget().setPlainText(text[delpos+1:])
             self.display.currentWidget().insertPlainText(text[:delpos-1])
@@ -175,11 +176,11 @@ class MainWindow(QtWidgets.QMainWindow):
         toolbar.addWidget(self.pages_head)
         toolbar.addSeparator()
 
-        self.nextPageButton = QAction(QIcon('resources/NewPageIcon.PNG'),'Next/New page',self)
+        self.nextPageButton = QAction(QIcon('resources/NewPageIconInv.png'),'Next/New page',self)
         self.nextPageButton.triggered.connect(self.NextPage)
         toolbar.addAction(self.nextPageButton)
 
-        self.lastPageButton = QAction(QIcon('resources/InvalidLastPageIcon.PNG'),'Previous page',self)
+        self.lastPageButton = QAction(QIcon('resources/InvalidLastPageIconInv.png'),'Previous page',self)
         self.lastPageButton.triggered.connect(self.LastPage)
         toolbar.addAction(self.lastPageButton)
 
@@ -197,7 +198,7 @@ class MainWindow(QtWidgets.QMainWindow):
         toolbar.addWidget(self.controls_head)
         toolbar.addSeparator()
 
-        self.interpretButton = QAction(QIcon('resources/InterpretIcon.PNG'),'Interpret',self)
+        self.interpretButton = QAction(QIcon('resources/InterpretIconInv.png'),'Interpret',self)
         self.interpretButton.triggered.connect(self.ReadText)
         toolbar.addAction(self.interpretButton)
 
@@ -224,48 +225,42 @@ class MainWindow(QtWidgets.QMainWindow):
         nextPage = current +1
         if current != len(self.pages)-1:
             if nextPage == len(self.pages)-1:
-                self.nextPageButton.setIcon(QIcon('resources/NewPageIcon.PNG'))
+                self.nextPageButton.setIcon(QIcon('resources/NewPageIconInv.png'))
             self.display.setCurrentIndex(nextPage)
         else:
             newPage = QTextEdit()
             self.display.addWidget(newPage)
             self.pages.append(newPage)
             self.display.setCurrentIndex(nextPage)
-        self.lastPageButton.setIcon(QIcon('resources/LastPageIcon.PNG'))
+        self.lastPageButton.setIcon(QIcon('resources/LastPageIconInv.png'))
 
     def LastPage(self):
         current = self.display.currentIndex()
         if current != 0:
             self.display.setCurrentIndex(current-1)
-            self.nextPageButton.setIcon(QIcon('resources/NextPageIcon.PNG'))
+            self.nextPageButton.setIcon(QIcon('resources/NextPageIconInv.png'))
 
     def BarDisplayUpdate(self):
         current = self.display.currentIndex()
         if current == 0:
-            self.lastPageButton.setIcon(QIcon('resources/InvalidLastPageIcon.PNG'))
+            self.lastPageButton.setIcon(QIcon('resources/InvalidLastPageIconInv.png'))
         newPageDisplay = str(current+1)+' / '+str(len(self.pages))
         self.pageDisplay.setText(newPageDisplay)
         
     def ReadText(self):
-        # -------------------------------------------------------------- #
-        # Alex Walker have a look below! ------------------------------- #
-
         buffer = QBuffer()
         buffer.open(QIODevice.ReadWrite)
-        self.canvas.image.save(buffer, "PNG")
+        self.canvas.image.save(buffer, "png")
         data = BytesIO(buffer.data())
         buffer.close()
+        
         img = Image.open(data) # PIL image format
-
-        # -------------------------------------------------------------- #
-
-
         thresh = 200
         fn = lambda x : 255 if x > thresh else 0
         mod = img.convert('L').point(fn, mode='1')
 
         text = pytesseract.image_to_string(mod, config ='--psm 10')
-        text = text.replace("~¦", "")
+        text = text.replace(control, "")
         self.pages[self.display.currentIndex()].insertPlainText(text.strip())
         self.canvas.clearImage()
 
@@ -280,7 +275,7 @@ class MainWindow(QtWidgets.QMainWindow):
         name = "".join(content[0].split(" ")[:2])
 
         with open(path + name, "w") as f:
-            f.write("~¦".join(content))
+            f.write(control.join(content))
 
     
 def main():
