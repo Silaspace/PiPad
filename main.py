@@ -133,6 +133,37 @@ class MainWindow(QtWidgets.QMainWindow):
         buffer.close()
 
         img = Image.open(data)
+        
+        from PIL import Image
+        import math
+
+        colour = (0, 0, 0)
+        pixel_list=[]
+        img = Image.open('jam2.png')
+        rgb_img = img.convert('RGB')
+        for x in range(rgb_img.size[0]):
+          for y in range(rgb_img.size[1]):
+            r, g, b = rgb_img.getpixel((x, y))
+            if (r,g,b) == colour:
+              pixel_list.append((x, y))
+
+        first_tuple_elements=[]
+        for s in pixel_list:
+          first_tuple_elements.append(s[0])
+
+        second_tuple_elements=[]
+        for j in pixel_list:
+          second_tuple_elements.append(j[1])
+
+        x3=min(first_tuple_elements)
+        y3=min(second_tuple_elements)
+        x4=max(first_tuple_elements)
+        y4=max(second_tuple_elements)
+
+        imageObject=Image.open("jam2.png")
+        cropped=imageObject.crop((x3,y3,x4,y4))
+        cropped.save('cropped_jam2.png')
+
         text = pytesseract.image_to_string(img, config ='--psm 10')
 
         self.pages[self.l.currentIndex()].insertPlainText(text.strip())
