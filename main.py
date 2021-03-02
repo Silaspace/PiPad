@@ -260,27 +260,21 @@ class MainWindow(QtWidgets.QMainWindow):
         img = img.convert('L').point(fn, mode='1')
 
         colour = (255, 255, 255)
-        pixel_list=[]
+        x_elements=[]
+        y_elements=[]
+
         rgb_img = img.convert('RGB')
         for x in range(rgb_img.size[0]):
-          for y in range(rgb_img.size[1]):
-            r, g, b = rgb_img.getpixel((x, y))
-            if (r,g,b) == colour:
-              pixel_list.append((x, y))
+            for y in range(rgb_img.size[1]):
+                r, g, b = rgb_img.getpixel((x, y))
+                if (r,g,b) == colour:
+                    x_elements.append(x)
+                    y_elements.append(y)
 
-        first_tuple_elements=[]
-        for s in pixel_list:
-          first_tuple_elements.append(s[0])
-
-        second_tuple_elements=[]
-        for j in pixel_list:
-          second_tuple_elements.append(j[1])
-
-        x3 = min(first_tuple_elements)
-        y3 = min(second_tuple_elements)
-        x4 = max(first_tuple_elements)
-        y4 = max(second_tuple_elements)
-
+        x3 = min(x_elements) - 20
+        y3 = min(y_elements) - 20
+        x4 = max(x_elements) + 20
+        y4 = max(y_elements) + 20
         crop = img.crop((x3,y3,x4,y4))
 
         text = pytesseract.image_to_string(crop, config ='--psm 10')
