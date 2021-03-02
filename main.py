@@ -254,7 +254,7 @@ class MainWindow(QtWidgets.QMainWindow):
         data = BytesIO(buffer.data())
         buffer.close()
         
-        img = Image.open(data) # PIL image format
+        img = Image.open(data)
         thresh = 200
         fn = lambda x : 255 if x > thresh else 0
         img = img.convert('L').point(fn, mode='1')
