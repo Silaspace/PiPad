@@ -4,13 +4,16 @@ from PyQt5.QtCore import Qt, QIODevice, QBuffer
 from PyQt5.QtGui import QIcon, QImage, QPainter, QPainterPath, QPen
 from PyQt5.QtWidgets import QTextEdit, QMainWindow, QAction, QApplication, QToolBar, QSizePolicy
 
-import pytesseract
+#import pytesseract
 from PIL import Image
 from io import BytesIO
 
 # Global Variables
-
-path = os.getcwd() + "/saved/"
+resourcepath = "Z:\PiPad-main\PiPad-main\\resources"
+csspath = "Z:\PiPad-main\PiPad-main\styles.css"
+#path = os.getcwd() + "/saved/" # Unix version
+#path = os.getcwd() + "\saved\\" # Windows version
+path = "Z:\PiPad-main\PiPad-main\saved\\"
 control = "~~~"
 
 class Canvas(QtWidgets.QWidget):
@@ -104,7 +107,10 @@ class savedNote:
 
     def __init__(self, title, parent):
         self.display = QAction(title, parent)
-        self.path = "path/to/file"
+        self.path = path
+    
+    def delete(self):
+        self.display.deleteLater()
 
     def clicked(self, a):
         pass
@@ -116,6 +122,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self.pages = [QTextEdit()]
+        self.toolbar = QToolBar()
         self.initUI()
         self.penWidth = 4
         self.canvas = Canvas()
@@ -149,66 +156,71 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.setCentralWidget(self.w)
         self.display.currentChanged.connect(self.BarDisplayUpdate)
-    
+        
+    def addNotes(self):
+        all_saved = [] 
+        print("Cleared list")
+        for file in os.listdir(path):
+            all_saved.append(file)
+        print("Got files")
+        self.saved_note_buttons = []
+        for i in all_saved:
+            self.saved_note_buttons.append(savedNote(i, self))
+            self.saved_note_buttons[::-1][0].display.triggered.connect(self.saved_note_buttons[::-1][0].clicked)
+            self.toolbar.addAction(self.saved_note_buttons[::-1][0].display)
+
     def initUI(self):
-        toolbar = QToolBar()
-        toolbar.setMovable(False)
-        self.addToolBar(Qt.LeftToolBarArea,toolbar) # Switched toolbar to left cause it looked cool
+        self.toolbar.setMovable(False)
+        self.addToolBar(Qt.LeftToolBarArea,self.toolbar) # Switched toolbar to left cause it looked cool
         
         # Saved Notes
         # ------------------------------------------------------------------------------------- #
         self.notes_heading = QtWidgets.QLabel('Saved Notes',self)
-        toolbar.addWidget(self.notes_heading)
-        toolbar.addSeparator()
-
-        all_saved = ["title", "test", "example"]
-        self.saved_note_buttons = []
-
-        for i in all_saved:
-            self.saved_note_buttons.append(savedNote(i, self))
-            self.saved_note_buttons[::-1][0].display.triggered.connect(self.saved_note_buttons[::-1][0].clicked)
-            toolbar.addAction(self.saved_note_buttons[::-1][0].display)
+        self.toolbar.addWidget(self.notes_heading)
+        self.toolbar.addSeparator()
+        
+        self.addNotes()
 
 
         # Pages heading
         # ------------------------------------------------------------------------------------- #
         self.pages_head = QtWidgets.QLabel('Pages',self)
-        toolbar.addWidget(self.pages_head)
-        toolbar.addSeparator()
+        self.toolbar.addWidget(self.pages_head)
+        self.toolbar.addSeparator()
 
-        self.nextPageButton = QAction(QIcon('resources/NewPageIconInv.png'),'Next/New page',self)
+        self.nextPageButton = QAction(QIcon(resourcepath+ '/NewPageIconInv.png'),'Next/New page',self)
         self.nextPageButton.triggered.connect(self.NextPage)
-        toolbar.addAction(self.nextPageButton)
+        self.toolbar.addAction(self.nextPageButton)
 
-        self.lastPageButton = QAction(QIcon('resources/InvalidLastPageIconInv.png'),'Previous page',self)
+        self.lastPageButton = QAction(QIcon(resourcepath+'/InvalidLastPageIconInv.png'),'Previous page',self)
         self.lastPageButton.triggered.connect(self.LastPage)
-        toolbar.addAction(self.lastPageButton)
+        self.toolbar.addAction(self.lastPageButton)
 
         self.saveButton = QAction('Save',self)
         self.saveButton.triggered.connect(self.SaveNotes)
-        toolbar.addAction(self.saveButton)
+        self.toolbar.addAction(self.saveButton)
 
         self.pageDisplay = QtWidgets.QLabel('1 / 1', self)#.setAlignment(Qt.AlignCenter) Trying to center it (horizontally), not working rn.
-        toolbar.addWidget(self.pageDisplay)
+        self.toolbar.addWidget(self.pageDisplay)
 
 
         # Special controls heading
         # ------------------------------------------------------------------------------------- #
         self.controls_head = QtWidgets.QLabel('Controls',self)
-        toolbar.addWidget(self.controls_head)
-        toolbar.addSeparator()
+        self.toolbar.addWidget(self.controls_head)
+        self.toolbar.addSeparator()
 
-        self.interpretButton = QAction(QIcon('resources/InterpretIconInv.png'),'Interpret',self)
+        self.interpretButton = QAction(QIcon(resourcepath+'/InterpretIconInv.png'),'Interpret',self)
         self.interpretButton.triggered.connect(self.ReadText)
-        toolbar.addAction(self.interpretButton)
+        self.toolbar.addAction(self.interpretButton)
 
         self.boardSwitchButton = QAction('Swap Input', self)
         self.boardSwitchButton.triggered.connect(self.BoardSwitch)
-        toolbar.addAction(self.boardSwitchButton)
+        self.toolbar.addAction(self.boardSwitchButton)
 
         self.newLineButton = QAction('New line', self)
         self.newLineButton.triggered.connect(self.NewLine)
-        toolbar.addAction(self.newLineButton)
+        self.toolbar.addAction(self.newLineButton)
                                        
         self.setGeometry(200,200,750,600)
         self.setWindowTitle('PiPad')
@@ -225,25 +237,25 @@ class MainWindow(QtWidgets.QMainWindow):
         nextPage = current +1
         if current != len(self.pages)-1:
             if nextPage == len(self.pages)-1:
-                self.nextPageButton.setIcon(QIcon('resources/NewPageIconInv.png'))
+                self.nextPageButton.setIcon(QIcon(resourcepath+'/NewPageIconInv.png'))
             self.display.setCurrentIndex(nextPage)
         else:
             newPage = QTextEdit()
             self.display.addWidget(newPage)
             self.pages.append(newPage)
             self.display.setCurrentIndex(nextPage)
-        self.lastPageButton.setIcon(QIcon('resources/LastPageIconInv.png'))
+        self.lastPageButton.setIcon(QIcon(resourcepath+'/LastPageIconInv.png'))
 
     def LastPage(self):
         current = self.display.currentIndex()
         if current != 0:
             self.display.setCurrentIndex(current-1)
-            self.nextPageButton.setIcon(QIcon('resources/NextPageIconInv.png'))
+            self.nextPageButton.setIcon(QIcon(resourcepath+'/NextPageIconInv.png'))
 
     def BarDisplayUpdate(self):
         current = self.display.currentIndex()
         if current == 0:
-            self.lastPageButton.setIcon(QIcon('resources/InvalidLastPageIconInv.png'))
+            self.lastPageButton.setIcon(QIcon(resourcepath+'/InvalidLastPageIconInv.png'))
         newPageDisplay = str(current+1)+' / '+str(len(self.pages))
         self.pageDisplay.setText(newPageDisplay)
         
@@ -287,17 +299,24 @@ class MainWindow(QtWidgets.QMainWindow):
             self.h2.setCurrentIndex(1)
         else:
             self.h2.setCurrentIndex(0)
+            
+
 
     def SaveNotes(self, a):
         content = [i.toPlainText() for i in self.pages]
         name = "".join(content[0].split(" ")[:2])
-
-        with open(path + name, "w") as f:
+        with open(path + name, "a") as f:
             f.write(control.join(content))
-
+        #--
+        for note in self.saved_note_buttons:
+            note.delete()
+        #--
+        print("deleted")
+        print(self.addNotes)
+        self.addNotes(toolbar)
     
 def main():
-    with open("styles.css", "r") as f:
+    with open(csspath, "r") as f:
         app = QApplication(sys.argv)
         ex = MainWindow()
         ex.setStyleSheet(f.read())
