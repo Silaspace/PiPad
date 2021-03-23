@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, math
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QIODevice, QBuffer
 from PyQt5.QtGui import QIcon, QImage, QPainter, QPainterPath, QPen
@@ -257,9 +257,27 @@ class MainWindow(QtWidgets.QMainWindow):
         img = Image.open(data) # PIL image format
         thresh = 200
         fn = lambda x : 255 if x > thresh else 0
-        mod = img.convert('L').point(fn, mode='1')
+        img = img.convert('L').point(fn, mode='1')
 
-        text = pytesseract.image_to_string(mod, config ='--psm 10')
+        colour = (255, 255, 255)
+        x_elements=[]
+        y_elements=[]
+
+        rgb_img = img.convert('RGB')
+        for x in range(rgb_img.size[0]):
+            for y in range(rgb_img.size[1]):
+                r, g, b = rgb_img.getpixel((x, y))
+                if (r,g,b) == colour:
+                    x_elements.append(x)
+                    y_elements.append(y)
+
+        x3 = min(x_elements) - 20
+        y3 = min(y_elements) - 20
+        x4 = max(x_elements) + 20
+        y4 = max(y_elements) + 20
+        crop = img.crop((x3,y3,x4,y4))
+
+        text = pytesseract.image_to_string(crop, config ='--psm 10')
         text = text.replace(control, "")
         self.pages[self.display.currentIndex()].insertPlainText(text.strip())
         self.canvas.clearImage()
