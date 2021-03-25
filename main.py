@@ -314,7 +314,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def SaveNotes(self, a):
         content = [i.toPlainText() for i in self.pages]
-        name = "".join(content[0].split(" ")[:2])
+        name = "".join(content[0].split(" ")[:2]) + ".txt"
+
         with open(path + name, "a") as f:
             f.write(control.join(content))
 
