@@ -9,11 +9,14 @@ from PIL import Image
 from io import BytesIO
 
 # Global Variables
-resourcepath = "Z:\PiPad-main\PiPad-main\\resources"
-csspath = "Z:\PiPad-main\PiPad-main\styles.css"
-#path = os.getcwd() + "/saved/" # Unix version
-#path = os.getcwd() + "\saved\\" # Windows version
-path = "Z:\PiPad-main\PiPad-main\saved\\"
+#resourcepath = "Z:\PiPad-main\PiPad-main\\resources"
+#csspath = "Z:\PiPad-main\PiPad-main\styles.css"
+#path = "Z:\PiPad-main\PiPad-main\saved\\"
+
+resourcepath = os.getcwd() + "/resources/"
+csspath = os.getcwd() + "/styles.css"
+path = os.getcwd() + "/saved/"
+
 control = "~~~"
 
 class Canvas(QtWidgets.QWidget):
@@ -106,14 +109,17 @@ class Keyboard(QtWidgets.QGridLayout):
 class savedNote:
 
     def __init__(self, title, parent):
+        self.parent = parent
         self.display = QAction(title, parent)
-        self.path = path
+        self.path = path + title
     
     def delete(self):
         self.display.deleteLater()
 
     def clicked(self, a):
-        pass
+        with open(self.path, "r") as f:
+            for i, c in enumerate(f.read().split(control)):
+                self.parent.pages[i].insertPlainText(c)
 
 
 
@@ -159,32 +165,34 @@ class MainWindow(QtWidgets.QMainWindow):
         
     def addNotes(self):
         all_saved = [] 
-        print("Cleared list")
-        for file in os.listdir(path):
-            all_saved.append(file)
-        print("Got files")
+        for f in os.listdir(path):
+            all_saved.append(f)
+
         self.saved_note_buttons = []
-        for i in all_saved:
+        for i in all_saved[:5]:
             self.saved_note_buttons.append(savedNote(i, self))
             self.saved_note_buttons[::-1][0].display.triggered.connect(self.saved_note_buttons[::-1][0].clicked)
             self.toolbar.addAction(self.saved_note_buttons[::-1][0].display)
 
     def initUI(self):
+        self.separator = QtWidgets.QLabel('     ',self)
         self.toolbar.setMovable(False)
-        self.addToolBar(Qt.LeftToolBarArea,self.toolbar) # Switched toolbar to left cause it looked cool
+        self.addToolBar(Qt.LeftToolBarArea,self.toolbar)
         
         # Saved Notes
         # ------------------------------------------------------------------------------------- #
-        self.notes_heading = QtWidgets.QLabel('Saved Notes',self)
+        self.notes_heading = QtWidgets.QLabel('    Saved Notes',self)
         self.toolbar.addWidget(self.notes_heading)
         self.toolbar.addSeparator()
         
         self.addNotes()
 
+        self.toolbar.addWidget(self.separator)
+
 
         # Pages heading
         # ------------------------------------------------------------------------------------- #
-        self.pages_head = QtWidgets.QLabel('Pages',self)
+        self.pages_head = QtWidgets.QLabel('        Pages',self)
         self.toolbar.addWidget(self.pages_head)
         self.toolbar.addSeparator()
 
@@ -203,10 +211,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pageDisplay = QtWidgets.QLabel('1 / 1', self)#.setAlignment(Qt.AlignCenter) Trying to center it (horizontally), not working rn.
         self.toolbar.addWidget(self.pageDisplay)
 
+        self.toolbar.addWidget(self.separator)
+
 
         # Special controls heading
         # ------------------------------------------------------------------------------------- #
-        self.controls_head = QtWidgets.QLabel('Controls',self)
+        self.controls_head = QtWidgets.QLabel('      Controls',self)
         self.toolbar.addWidget(self.controls_head)
         self.toolbar.addSeparator()
 
@@ -307,13 +317,11 @@ class MainWindow(QtWidgets.QMainWindow):
         name = "".join(content[0].split(" ")[:2])
         with open(path + name, "a") as f:
             f.write(control.join(content))
-        #--
+
         for note in self.saved_note_buttons:
             note.delete()
-        #--
-        print("deleted")
-        print(self.addNotes)
-        self.addNotes(toolbar)
+
+        self.addNotes()
     
 def main():
     with open(csspath, "r") as f:
