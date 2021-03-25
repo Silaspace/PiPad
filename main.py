@@ -175,7 +175,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.toolbar.addAction(self.saved_note_buttons[::-1][0].display)
 
     def initUI(self):
-        self.separator = QtWidgets.QLabel('     ',self)
+        self.separator = QtWidgets.QLabel('\n',self)
         self.toolbar.setMovable(False)
         self.addToolBar(Qt.LeftToolBarArea,self.toolbar)
         

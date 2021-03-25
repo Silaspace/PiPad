@@ -9,7 +9,6 @@ QTextEdit {
   background-color: rgb(159, 233, 2);
   color: white;
   font-size: 16px;
-  transition: all 100ms ease;
 }
 QTextEdit:hover {
   background: #3b3b3b;
