@@ -234,7 +234,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Initilisation
         # ------------------------------------------------------------------------------------- #
 
-        self.setGeometry(0,0,800,
+        self.setGeometry(0,0,800,480)
         
 
     def NewLine(self):
