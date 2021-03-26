@@ -235,6 +235,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # ------------------------------------------------------------------------------------- #
 
         self.setGeometry(0,0,800,480)
+        self.setWindowTitle('PiPad')
+        self.show()
+
         
 
     def NewLine(self):
