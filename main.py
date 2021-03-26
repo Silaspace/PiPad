@@ -2,7 +2,7 @@ import sys, os, math
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QIODevice, QBuffer
 from PyQt5.QtGui import QIcon, QImage, QPainter, QPainterPath, QPen
-from PyQt5.QtWidgets import QTextEdit, QMainWindow, QAction, QApplication, QToolBar, QSizePolicy
+from PyQt5.QtWidgets import QTextEdit, QMainWindow, QAction, QApplication, QToolBar, QSizePolicy, QSpacerItem
 
 #import pytesseract
 from PIL import Image
@@ -110,7 +110,7 @@ class savedNote:
 
     def __init__(self, title, parent):
         self.parent = parent
-        self.display = QAction(title, parent)
+        self.display = QAction(title.split(".")[0], parent)
         self.path = path + title
     
     def delete(self):
@@ -175,19 +175,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.toolbar.addAction(self.saved_note_buttons[::-1][0].display)
 
     def initUI(self):
-        self.separator = QtWidgets.QLabel('\n',self)
         self.toolbar.setMovable(False)
         self.addToolBar(Qt.LeftToolBarArea,self.toolbar)
-        
-        # Saved Notes
-        # ------------------------------------------------------------------------------------- #
-        self.notes_heading = QtWidgets.QLabel('    Saved Notes',self)
-        self.toolbar.addWidget(self.notes_heading)
-        self.toolbar.addSeparator()
-        
-        self.addNotes()
-
-        self.toolbar.addWidget(self.separator)
 
 
         # Pages heading
@@ -211,12 +200,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pageDisplay = QtWidgets.QLabel('1 / 1', self)#.setAlignment(Qt.AlignCenter) Trying to center it (horizontally), not working rn.
         self.toolbar.addWidget(self.pageDisplay)
 
-        self.toolbar.addWidget(self.separator)
-
 
         # Special controls heading
         # ------------------------------------------------------------------------------------- #
         self.controls_head = QtWidgets.QLabel('      Controls',self)
+        self.controls_head.setStyleSheet("padding-top: 50px")
         self.toolbar.addWidget(self.controls_head)
         self.toolbar.addSeparator()
 
@@ -235,6 +223,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setGeometry(200,200,750,600)
         self.setWindowTitle('PiPad')
         self.show()
+
+
+        # Saved Notes
+        # ------------------------------------------------------------------------------------- #
+        self.notes_heading = QtWidgets.QLabel('    Saved Notes',self)
+        self.notes_heading.setStyleSheet("padding-top: 50px")
+        self.toolbar.addWidget(self.notes_heading)
+        self.toolbar.addSeparator()
+        
+        self.addNotes()
 
         
 
@@ -314,7 +312,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def SaveNotes(self, a):
         content = [i.toPlainText() for i in self.pages]
-        name = "".join(content[0].split(" ")[:2]) + ".txt"
+        name = "".join(content[0].replace("\n", " ").split(" ")[:2]) + ".txt"
 
         with open(path + name, "a") as f:
             f.write(control.join(content))
