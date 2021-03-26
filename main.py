@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt, QIODevice, QBuffer
 from PyQt5.QtGui import QIcon, QImage, QPainter, QPainterPath, QPen
 from PyQt5.QtWidgets import QTextEdit, QMainWindow, QAction, QApplication, QToolBar, QSizePolicy, QSpacerItem
 
-#import pytesseract
+import pytesseract
 from PIL import Image
 from io import BytesIO
 
@@ -18,6 +18,7 @@ csspath = os.getcwd() + "/styles.css"
 path = os.getcwd() + "/saved/"
 
 control = "~~~"
+backgroundcolor = "#171717"
 
 class Canvas(QtWidgets.QWidget):
     def __init__(self, parent=None):
@@ -129,6 +130,7 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__()
         self.pages = [QTextEdit()]
         self.toolbar = QToolBar()
+        self.toolbar.setStyleSheet("background-color: " + backgroundcolor)
         self.initUI()
         self.penWidth = 4
         self.canvas = Canvas()
@@ -181,7 +183,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Pages heading
         # ------------------------------------------------------------------------------------- #
-        self.pages_head = QtWidgets.QLabel('        Pages',self)
+        self.pages_head = QtWidgets.QLabel('Pages',self)
+        self.pages_head.setAlignment(Qt.AlignCenter)
         self.toolbar.addWidget(self.pages_head)
         self.toolbar.addSeparator()
 
@@ -193,18 +196,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.lastPageButton.triggered.connect(self.LastPage)
         self.toolbar.addAction(self.lastPageButton)
 
-        self.saveButton = QAction('Save',self)
-        self.saveButton.triggered.connect(self.SaveNotes)
-        self.toolbar.addAction(self.saveButton)
-
-        self.pageDisplay = QtWidgets.QLabel('1 / 1', self)#.setAlignment(Qt.AlignCenter) Trying to center it (horizontally), not working rn.
+        self.pageDisplay = QtWidgets.QLabel('1 / 1', self)
+        self.pageDisplay.setAlignment(Qt.AlignCenter)
+        self.pageDisplay.setStyleSheet("font-size: 10px;")
         self.toolbar.addWidget(self.pageDisplay)
 
 
         # Special controls heading
         # ------------------------------------------------------------------------------------- #
-        self.controls_head = QtWidgets.QLabel('      Controls',self)
-        self.controls_head.setStyleSheet("padding-top: 50px")
+        self.controls_head = QtWidgets.QLabel('Controls',self)
+        self.controls_head.setAlignment(Qt.AlignCenter)
+        self.controls_head.setStyleSheet("padding-top: 50px;")
         self.toolbar.addWidget(self.controls_head)
         self.toolbar.addSeparator()
 
@@ -220,10 +222,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.newLineButton.triggered.connect(self.NewLine)
         self.toolbar.addAction(self.newLineButton)
 
+        self.saveButton = QAction('Save',self)
+        self.saveButton.triggered.connect(self.SaveNotes)
+        self.toolbar.addAction(self.saveButton)
+
 
         # Saved Notes
         # ------------------------------------------------------------------------------------- #
-        self.notes_heading = QtWidgets.QLabel('    Saved Notes',self)
+        self.notes_heading = QtWidgets.QLabel('Recent Notes',self)
+        self.notes_heading.setAlignment(Qt.AlignCenter)
         self.notes_heading.setStyleSheet("padding-top: 50px")
         self.toolbar.addWidget(self.notes_heading)
         self.toolbar.addSeparator()
@@ -234,7 +241,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # Initilisation
         # ------------------------------------------------------------------------------------- #
 
-        self.setGeometry(0,0,800,480)
+        self.setGeometry(50,50,1200,620)
+        #self.setGeometry(0,0,800,480)
         self.setWindowTitle('PiPad')
         self.show()
 
