@@ -1,7 +1,4 @@
 
-QPushButton#key { background-color: red }
-
-
 QTextEdit {
   font-family: sans-serif;
   border: 2px solid white;
@@ -36,5 +33,6 @@ QWidget#bruij {
   border-radius: 10px;
 }
 QToolBar {
-  
+  border: 1px solid black;
+  background-color: fff;
 }

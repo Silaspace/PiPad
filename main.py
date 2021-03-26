@@ -219,10 +219,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.newLineButton = QAction('New line', self)
         self.newLineButton.triggered.connect(self.NewLine)
         self.toolbar.addAction(self.newLineButton)
-                                       
-        self.setGeometry(200,200,750,600)
-        self.setWindowTitle('PiPad')
-        self.show()
 
 
         # Saved Notes
@@ -234,6 +230,11 @@ class MainWindow(QtWidgets.QMainWindow):
         
         self.addNotes()
 
+
+        # Initilisation
+        # ------------------------------------------------------------------------------------- #
+
+        self.setGeometry(0,0,800,
         
 
     def NewLine(self):
