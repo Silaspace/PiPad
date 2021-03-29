@@ -3,7 +3,7 @@
 # ------------------------------------------------------------------------------------------------------------------------------------- #
 
 # Useful stuff from the Python Standard Library
-import sys, os, math
+import sys, os, math, time
 
 
 # PyQt5 - We haven't imported everything to keep overhead as low as possible
@@ -32,7 +32,8 @@ path = os.getcwd() + "/saved/"
 
 
 # OS independant globals
-control = "~~~"
+control = "~"
+control2 = "$"
 backgroundcolor = "#171717"
 
 
@@ -118,16 +119,27 @@ class Canvas(QtWidgets.QWidget): # Inherit all the good stuff from QtWdgets
 # Used so that the user can type comfortably if handwriting recognition isn't desired.
 # Also used in dialog boxes later on
 
-class Keyboard(QtWidgets.QGridLayout): # Inherit from QGRidLayout
-    def __init__(self, display, rackStack, *args):
+class Keyboard(QtWidgets.QGridLayout):
+    def __init__(self, display, rackStack, Shift = False, Stacked = True):
         super().__init__()
         self.setSizeConstraint(QtWidgets.QLayout.SetNoConstraint)
+        self.stacked = Stacked
         self.keys = {}
         self.display = display
         self.rackStack = rackStack
+        if Shift:
+            KeysToAdd = (['!','"','£','$','%','^','&&','*','(',')','_','+'],
+                        'QWERTYUIOP{}',
+                        'ASDFGHJKL:@~',
+                        '|ZXCVBNM<>?¬')
+        else:
+            KeysToAdd = ('1234567890-=',
+                         'qwertyuiop[]',
+                         "asdfghjkl;'#",
+                         '\zxcvbnm,./`')
 
         # Constructs the keyboard from a set of characters passed into the class instantiation function
-        for rowNum, keyRow in enumerate(args):
+        for rowNum, keyRow in enumerate(KeysToAdd):
             self.makeKeyRow(rowNum, keyRow)
 
         # Special keys expand to fill the bottom row.
@@ -144,7 +156,10 @@ class Keyboard(QtWidgets.QGridLayout): # Inherit from QGRidLayout
 
     # Creates a generic key for the keyboard
     def makeKey(self, key):
-        return lambda: self.display.currentWidget().insertPlainText(key)
+        if self.stacked:
+            return lambda: self.display.currentWidget().insertPlainText(key)
+        else:
+            return lambda: self.display.insertPlainText(key)
 
 
     # Creates a row of keys for the keyboard that expands to fill the available space
@@ -161,19 +176,20 @@ class Keyboard(QtWidgets.QGridLayout): # Inherit from QGRidLayout
 
     # Deletes one character
     def Backspace(self):
-        self.display.currentWidget().insertPlainText(control)
-        text = self.display.currentWidget().toPlainText()
+        DanOrange = self.display.currentWidget() if self.stacked else self.display
+        DanOrange.insertPlainText(control)
+        text = DanOrange.toPlainText()
         delpos = text.find(control)
         if delpos != 0:
-            self.display.currentWidget().setPlainText(text[delpos+1:])
-            self.display.currentWidget().insertPlainText(text[:delpos-1])
+            DanOrange.setPlainText(text[delpos+len(control):])
+            DanOrange.insertPlainText(text[:delpos-1])
         else:
-            self.display.currentWidget().setPlainText(text[1:])
+            DanOrange.setPlainText(text[len(control):])
 
     # Switches the current keyboard to a shifted keyboard (plus other funky characters)
     def Shift(self):
         if self.rackStack.currentIndex() == 1:
-            self.rackStack.setCurrentIndex(2)
+            self.rackStack.setCurrentIndex(2 if self.stacked else 0)
         else:
             self.rackStack.setCurrentIndex(1)
 
@@ -221,6 +237,40 @@ class savedNote:
 
 
 # ------------------------------------------------------------------------------------------------------------------------------------- #
+# Dialog Box
+# ------------------------------------------------------------------------------------------------------------------------------------- #
+
+# TODO: Description
+
+class TextInputDialog(QtWidgets.QDialog):
+
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+
+        self.setWindowTitle('Text Input')
+        buttons = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+        self.buttonBox = QtWidgets.QDialogButtonBox(buttons)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+
+        self.inputField = QtWidgets.QTextEdit()
+        self.layout = QtWidgets.QVBoxLayout()
+        self.layout.addWidget(self.inputField)
+        self.layout.addWidget(self.buttonBox)
+        self.setLayout(self.layout)
+
+    def sendData(self):
+        self.parent().dataSlot = self.inputField.toPlainText()
+        self.accept()
+
+
+
+
+
+
+
+
+# ------------------------------------------------------------------------------------------------------------------------------------- #
 # The Main Window
 # ------------------------------------------------------------------------------------------------------------------------------------- #
 
@@ -253,21 +303,13 @@ class MainWindow(QtWidgets.QMainWindow): # Inherits goodies from QMainWIndow
         
         # Builds a keyboard from the keyboard class
         kb1 = QtWidgets.QWidget()
-        self.normboard = Keyboard(self.display, self.h2,
-                                  '1234567890-=',
-                                  'qwertyuiop[]',
-                                  "asdfghjkl;'#",
-                                  '\zxcvbnm,./`')
+        self.normboard = Keyboard(self.display, self.h2, False)
         kb1.setLayout(self.normboard)
         self.h2.addWidget(kb1)
 
         # Builds a shifted keyboard from the keyboard class
         kb2 = QtWidgets.QWidget()
-        self.shiftboard = Keyboard(self.display, self.h2,
-                                   ['!','"','£','$','%','^','&&','*','(',')','_','+'],
-                                   'QWERTYUIOP{}',
-                                   'ASDFGHJKL:@~',
-                                   '|ZXCVBNM<>?¬')
+        self.shiftboard = Keyboard(self.display, self.h2, True)
         kb2.setLayout(self.shiftboard)
         self.h2.addWidget(kb2)
 
@@ -316,10 +358,15 @@ class MainWindow(QtWidgets.QMainWindow): # Inherits goodies from QMainWIndow
         self.lastPageButton.triggered.connect(self.LastPage)
         self.toolbar.addAction(self.lastPageButton)
 
+
+        self.testButton = QAction('TestDialog',self)
+        self.testButton.triggered.connect(self.Dialog)
+        self.toolbar.addAction(self.testButton)
+
         # Displays how many pages there are and which one you're on
         self.pageDisplay = QtWidgets.QLabel('1 / 1', self)
         self.pageDisplay.setAlignment(Qt.AlignCenter)
-        self.pageDisplay.setStyleSheet("font-size: 10px;")
+        self.pageDisplay.setStyleSheet("font-size: 8px;")
         self.toolbar.addWidget(self.pageDisplay)
 
 
@@ -329,7 +376,7 @@ class MainWindow(QtWidgets.QMainWindow): # Inherits goodies from QMainWIndow
         # Special controls label
         self.controls_head = QtWidgets.QLabel('Controls',self)
         self.controls_head.setAlignment(Qt.AlignCenter)
-        self.controls_head.setStyleSheet("padding-top: 50px;") # Creates a spacer between pages and special controls
+        self.controls_head.setStyleSheet("padding-top: 30px;") # Creates a spacer between pages and special controls
         self.toolbar.addWidget(self.controls_head)
 
         # Button triggers handwriting to text function
@@ -347,20 +394,23 @@ class MainWindow(QtWidgets.QMainWindow): # Inherits goodies from QMainWIndow
         self.newLineButton.triggered.connect(self.NewLine)
         self.toolbar.addAction(self.newLineButton)
 
-        # Button to save the current note 
-        self.saveButton = QAction('Save',self)
-        self.saveButton.triggered.connect(self.SaveNotes)
-        self.toolbar.addAction(self.saveButton)
-
 
 
 
 
         # Saved Notes heading
-        self.notes_heading = QtWidgets.QLabel('Recent Notes',self)
+        self.notes_heading = QtWidgets.QLabel('Notes',self)
         self.notes_heading.setAlignment(Qt.AlignCenter)
-        self.notes_heading.setStyleSheet("padding-top: 50px") # Creates a spacer between special controls and saved notes
+        self.notes_heading.setStyleSheet("padding-top: 30px") # Creates a spacer between special controls and saved notes
         self.toolbar.addWidget(self.notes_heading)
+
+        self.saveButton = QAction('Save',self)
+        self.saveButton.triggered.connect(self.SaveNotes)
+        self.toolbar.addAction(self.saveButton)
+
+        self.loadButton = QAction('Load file', self)
+        self.loadButton.triggered.connect(self.LoadNotes)
+        self.toolbar.addAction(self.loadButton)
         
         # Adds all the note buttons to the bottom of the toolbar
         self.addNotes()
@@ -379,21 +429,26 @@ class MainWindow(QtWidgets.QMainWindow): # Inherits goodies from QMainWIndow
         current = self.display.currentIndex()
         self.pages[current].insertPlainText('\n')
 
+    def Dialog(self):
+        dlg = SelectionDialog(self)
+        if dlg.exec_():
+            print(self.dataSlot)
+        else:
+            print('Cancelled')
+
 
     # Takes the user to the next page or creates one
     def NextPage(self):
         current = self.display.currentIndex()
         nextPage = current +1
         if current != len(self.pages)-1:
-            if nextPage == len(self.pages)-1:
-                self.nextPageButton.setIcon(QIcon(resourcepath+'/NewPageIconInv.png'))
             self.display.setCurrentIndex(nextPage)
         else:
             newPage = QTextEdit()
             self.display.addWidget(newPage)
             self.pages.append(newPage)
             self.display.setCurrentIndex(nextPage)
-        self.lastPageButton.setIcon(QIcon(resourcepath+'/LastPageIconInv.png'))
+        self.BarDisplayUpdate()
 
 
     # Takes the user to the last page
@@ -401,15 +456,22 @@ class MainWindow(QtWidgets.QMainWindow): # Inherits goodies from QMainWIndow
         current = self.display.currentIndex()
         if current != 0:
             self.display.setCurrentIndex(current-1)
-            self.nextPageButton.setIcon(QIcon(resourcepath+'/NextPageIconInv.png'))
+        self.BarDisplayUpdate()
 
 
     # Updates the label that shows how many pages you have and what page you are on
     def BarDisplayUpdate(self):
-        current = self.display.currentIndex()
-        if current == 0:
-            self.lastPageButton.setIcon(QIcon(resourcepath+'/InvalidLastPageIconInv.png'))
-        newPageDisplay = str(current+1)+' / '+str(len(self.pages))
+        current = self.display.currentIndex()+1
+        total = self.display.count()
+        if current == 1:
+            self.lastPageButton.setIcon(QIcon('InvalidLastPageIcon.PNG'))
+        else:
+            self.lastPageButton.setIcon(QIcon('LastPageIcon.PNG'))
+        if current == total:
+            self.nextPageButton.setIcon(QIcon('NewPageIcon.PNG'))
+        else:
+            self.nextPageButton.setIcon(QIcon('NextPageIcon.PNG'))
+        newPageDisplay = str(current)+' / '+str(total)
         self.pageDisplay.setText(newPageDisplay)
 
     
@@ -450,7 +512,7 @@ class MainWindow(QtWidgets.QMainWindow): # Inherits goodies from QMainWIndow
 
         # pytessesract calls tesseceract through the commandine
         text = pytesseract.image_to_string(crop, config ='--psm 10') # TODO config is important so tweak for best performance
-        text = text.replace(control, "") # If the control character appears, get rid of it! It will mess up saving/backspace
+        text = text.replace(control, "").replace(control2, "") # If the control characters appear, get rid of them! It will mess up saving/backspace
 
         # Add the text to the text editor and reset the canvas
         self.pages[self.display.currentIndex()].insertPlainText(text.strip())
@@ -480,7 +542,157 @@ class MainWindow(QtWidgets.QMainWindow): # Inherits goodies from QMainWIndow
             note.delete()
         self.addNotes()
 
+    def LoadNotes(self):    #IMPORTANT STUFF AS WELL
+        fileName = 'LoadTest.txt' #To be replaced with SelectionDialog
+        with open(fileName, 'r') as file:
+            contents = (file.read()).split(control2)
+        newpages = [QTextEdit(pageText) for pageText in contents]
+        self.pages.append(newpages[0])                  #Set up page 1 (for visuals)
+        self.display.addWidget(newpages[0])             #
+        self.display.setCurrentWidget(newpages.pop(0))  #
+        for i in range(1,len(self.pages)):                #Remove previous pages
+            self.display.removeWidget(self.pages.pop(0))  #
+        if len(newpages) >= 1:                    #Add the rest of the new pages
+            for page in newpages:                 #
+                self.pages.append(page)           #
+                self.display.addWidget(page)      #
+        self.BarDisplayUpdate()                 #And fix the bar display
 
+
+class KeyboardDialog(QtWidgets.QDialog):
+    
+    def __init__(self,title,*args):
+        super().__init__(*args)
+        self.setWindowTitle(title)
+
+        layout = QtWidgets.QVBoxLayout()
+        self.display = QtWidgets.QTextEdit()
+        layout.addWidget(self.display)
+        rackBase = QtWidgets.QWidget()
+        boardRack = QtWidgets.QStackedLayout()
+        rackBase.setLayout(boardRack)
+        kb1 = QtWidgets.QWidget()
+        normboard = Keyboard(self.display,boardRack, Stacked = False)
+        kb1.setLayout(normboard)
+        boardRack.addWidget(kb1)
+        kb2 = QtWidgets.QWidget()
+        shiftboard = Keyboard(self.display,boardRack,True,False)
+        kb2.setLayout(shiftboard)
+        boardRack.addWidget(kb2)
+        layout.addWidget(rackBase)
+        buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        buttonBox.accepted.connect(self.Input)
+        buttonBox.rejected.connect(self.reject)
+        layout.addWidget(buttonBox)
+        
+        self.setLayout(layout)
+
+    def Input(self):
+        self.parent().dataSlot = self.display.toPlainText()
+        self.accept()
+
+class SelectionDialog(QtWidgets.QDialog):
+
+    def __init__(self,*args):
+        super().__init__(*args)
+        self.setWindowTitle('Select a file')
+        self.NormalMode = True
+
+        layout = QtWidgets.QVBoxLayout()
+        toolbar = QtWidgets.QToolBar()
+        layout.addWidget(toolbar)
+        ModeToggle = QAction('Delete',self)
+        ModeToggle.triggered.connect(self.toggleMode)
+        ModeToggle.setCheckable(True)
+        toolbar.addAction(ModeToggle)
+        BackButton = QAction('Back',self)
+        BackButton.triggered.connect(self.backFile)
+        toolbar.addAction(BackButton)
+        scrollBase = QtWidgets.QScrollArea()
+        self.listRack = QtWidgets.QStackedLayout()
+        listRackWidget = QtWidgets.QWidget()
+        listRackWidget.setLayout(self.listRack)
+        listBase = QtWidgets.QVBoxLayout()
+        listBaseWidget = QtWidgets.QWidget()
+        listBaseWidget.setLayout(listBase)
+        for i in ('one','twohhhhhhhhhhhhhhhhhhhhhhhhh','three','four','five',
+                  'six','seben','wyth','nuevo','thirteen'):
+            listBase.addWidget(QtWidgets.QLabel(i))
+        self.listRack.addWidget(listBaseWidget)
+        
+        scrollBase.setWidget(listRackWidget)
+        
+            
+        layout.addWidget(scrollBase)
+        self.setLayout(layout)
+        self.getList()
+
+    def getList(self, dirname=''):
+        if dirname != '':
+            os.chdir(os.getcwd()+'\\'+dirname)
+        current = os.getcwd()
+        fileList = os.listdir(current)
+        (dirList, txtList) = ([],[])
+        scrollBase = QtWidgets.QScrollArea()
+        listBase = QtWidgets.QVBoxLayout()
+        listBaseWidget = QtWidgets.QWidget()
+        listBaseWidget.setLayout(listBase)
+        for i in fileList:
+            if os.path.isdir(current+'\\'+i):
+                pass
+                dirList.append(i)
+            else:
+                txtList.append(i)
+        if len(dirList) != 0:
+            listBase.addWidget(QtWidgets.QLabel('----Folders----'))
+            for i in dirList:
+                newButton = QtWidgets.QPushButton(i)
+                newButton.clicked.connect(self.makeDirButton(i))
+                newButton.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Fixed)
+                listBase.addWidget(newButton)
+        if len(txtList) != 0:
+            listBase.addWidget(QtWidgets.QLabel('-----Files-----'))
+            for i in txtList:
+                newButton = QtWidgets.QPushButton(i)
+                newButton.clicked.connect(self.makeFileButton(i))
+                newButton.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Fixed)
+                listBase.addWidget(newButton)
+        scrollBase.setWidget(listBaseWidget)
+        self.listRack.addWidget(scrollBase)
+        self.listRack.removeWidget(self.listRack.widget(0))
+
+    def toggleMode(self):
+        if self.NormalMode:
+            self.NormalMode = False
+        else:
+            self.NormalMode = True
+
+    def fileFunk(self,fileName):
+        if self.NormalMode:
+            self.parent().dataSlot = fileName
+            self.accept()
+        else:
+            os.remove(os.getcwd()+'\\'+fileName)
+            self.getList()
+
+    def dirFunk(self,dirName):
+        if self.NormalMode:
+            self.getList(dirName)
+        else:
+            if len(os.listdir(os.getcwd()+'\\'+dirName)) == 0:
+                os.rmdir(os.getcwd()+'\\'+dirName)
+                self.getList()
+
+    def makeDirButton(self,dirName):
+        return lambda: self.dirFunk(dirName)
+
+    def makeFileButton(self,fileName):
+        return lambda: self.fileFunk(fileName)
+
+    def backFile(self):
+        cwd = os.getcwd()
+        os.chdir(cwd[:cwd.rfind('\\')])
+        self.getList()
 
 
 

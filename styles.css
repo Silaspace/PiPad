@@ -7,7 +7,7 @@ Keyboard {
 }
 
 QLabel {
-  font-size: 14px;
+  font-size: 12px;
   padding: 10px;
 }
 
@@ -19,7 +19,7 @@ QTextEdit {
   font-family: sans-serif;
   border: 1px solid #eeeeee;
   color: #eeeeee;
-  font-size: 16px;
+  font-size: 12px;
 }
 
 QTextEdit:hover {
