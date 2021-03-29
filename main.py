@@ -33,7 +33,6 @@ path = os.getcwd() + "/saved/"
 
 # OS independant globals
 control = "~"
-control2 = "$"
 backgroundcolor = "#171717"
 
 
@@ -545,7 +544,7 @@ class MainWindow(QtWidgets.QMainWindow): # Inherits goodies from QMainWIndow
     def LoadNotes(self):    #IMPORTANT STUFF AS WELL
         fileName = 'LoadTest.txt' #To be replaced with SelectionDialog
         with open(fileName, 'r') as file:
-            contents = (file.read()).split(control2)
+            contents = (file.read()).split(control)
         newpages = [QTextEdit(pageText) for pageText in contents]
         self.pages.append(newpages[0])                  #Set up page 1 (for visuals)
         self.display.addWidget(newpages[0])             #
