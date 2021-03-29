@@ -257,13 +257,12 @@ class MainWindow(QtWidgets.QMainWindow):
         buffer.close()
         
         img = Image.open(data) # PIL image format
+        img = PIL.ImageOps.invert(img)
         thresh = 200
         fn = lambda x : 255 if x > thresh else 0
         img = img.convert('L').point(fn, mode='1')
-
-        img = PIL.ImageOps.invert(img)
         
-        colour = (255, 255, 255)
+        colour = (0, 0, 0)
         pixel_list=[]
         rgb_img = img.convert('RGB')
         for x in range(rgb_img.size[0]):
