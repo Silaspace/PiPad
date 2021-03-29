@@ -17,7 +17,7 @@ from PyQt5.QtWidgets import QTextEdit, QMainWindow, QAction, QApplication, QTool
 import pytesseract
 from PIL import Image
 from io import BytesIO
-
+import PIL.ImageOps
 
 # Global Variables for Windows
 #resourcepath = "Z:\PiPad-main\PiPad-main\\resources"
@@ -423,12 +423,13 @@ class MainWindow(QtWidgets.QMainWindow): # Inherits goodies from QMainWIndow
         buffer.close()
         
         img = Image.open(data) # Make a PIL image object from the png data
+        img = PIL.ImageOps.invert(img)
         thresh = 200
         fn = lambda x : 255 if x > thresh else 0
-        img = img.convert('L').point(fn, mode='1') # Turns the image back and white (better for tesseract)
+        img = img.convert('L').point(fn, mode='1') # Turns the image black and white (better for tesseract)
 
         # Code that crops the image so that the text fills the picture (also better for tesseract)
-        colour = (255, 255, 255) # (white)
+        colour = (0, 0, 0) # (black)
         x_elements=[]
         y_elements=[]
 
