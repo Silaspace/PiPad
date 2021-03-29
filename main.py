@@ -559,6 +559,20 @@ class MainWindow(QtWidgets.QMainWindow): # Inherits goodies from QMainWIndow
         self.BarDisplayUpdate()                 #And fix the bar display
 
 
+
+
+
+
+
+
+
+
+# ------------------------------------------------------------------------------------------------------------------------------------- #
+# Keyboard Dialog
+# ------------------------------------------------------------------------------------------------------------------------------------- #
+
+# TODO: Description
+
 class KeyboardDialog(QtWidgets.QDialog):
     
     def __init__(self,title,*args):
@@ -590,6 +604,21 @@ class KeyboardDialog(QtWidgets.QDialog):
     def Input(self):
         self.parent().dataSlot = self.display.toPlainText()
         self.accept()
+
+
+
+
+
+
+
+
+
+
+# ------------------------------------------------------------------------------------------------------------------------------------- #
+# Selection Dialog
+# ------------------------------------------------------------------------------------------------------------------------------------- #
+
+# TODO: Description
 
 class SelectionDialog(QtWidgets.QDialog):
 
