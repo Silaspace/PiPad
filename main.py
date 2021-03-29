@@ -4,6 +4,8 @@ from PyQt5.QtCore import Qt, QIODevice, QBuffer
 from PyQt5.QtGui import QIcon, QImage, QPainter, QPainterPath, QPen
 from PyQt5.QtWidgets import QTextEdit, QMainWindow, QAction, QApplication, QToolBar, QSizePolicy
 
+import PIL.ImageOps    
+
 import pytesseract
 from PIL import Image
 from io import BytesIO
@@ -259,6 +261,8 @@ class MainWindow(QtWidgets.QMainWindow):
         fn = lambda x : 255 if x > thresh else 0
         img = img.convert('L').point(fn, mode='1')
 
+        img = PIL.ImageOps.invert(img)
+        
         colour = (255, 255, 255)
         pixel_list=[]
         rgb_img = img.convert('RGB')
