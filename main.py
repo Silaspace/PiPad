@@ -511,7 +511,7 @@ class MainWindow(QtWidgets.QMainWindow): # Inherits goodies from QMainWIndow
 
         # pytessesract calls tesseceract through the commandine
         text = pytesseract.image_to_string(crop, config ='--psm 10') # TODO config is important so tweak for best performance
-        text = text.replace(control, "").replace(control2, "") # If the control characters appear, get rid of them! It will mess up saving/backspace
+        text = text.replace(control, "") # If the control character appears, get rid of them! It will mess up saving/backspace
 
         # Add the text to the text editor and reset the canvas
         self.pages[self.display.currentIndex()].insertPlainText(text.strip())
