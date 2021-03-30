@@ -358,9 +358,9 @@ class MainWindow(QtWidgets.QMainWindow): # Inherits goodies from QMainWIndow
         self.toolbar.addAction(self.lastPageButton)
 
 
-        self.testButton = QAction('TestDialog',self)
-        self.testButton.triggered.connect(self.Dialog)
-        self.toolbar.addAction(self.testButton)
+        #self.testButton = QAction('TestDialog',self)
+        #self.testButton.triggered.connect(self.Dialog)
+        #self.toolbar.addAction(self.testButton)
 
         # Displays how many pages there are and which one you're on
         self.pageDisplay = QtWidgets.QLabel('1 / 1', self)
