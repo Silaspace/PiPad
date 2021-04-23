@@ -33,7 +33,7 @@ resourcepath = os.getcwd() + "/resources/"
 csspath = os.getcwd() + "/styles.css"
 path = os.getcwd() + "/saved/"
 ```
- - These are global variables for linux which we have chosen to use as the os for our Raspberry Pi.
+ - These are global variables for linux which we have chosen to use as the OS for our Raspberry Pi.
  
 ```
 control = "~"
@@ -43,17 +43,27 @@ backgroundcolor = "#171717"
  - The "canvas" is what the user will use to write on.
  
  ```
- class Canvas(QtWidgets.QWidget):
-    def __init__(self, parent=None):
-        super().__init__()
-        self.setAttribute(Qt.WA_StaticContents)
-
-        self.myPenWidth = 5
-        self.myPenColor = Qt.white
-
         self.image = QImage(1200, 300, QImage.Format_RGB32)
         self.path = QPainterPath()
-
-        self.clearImage()
  ```
- - 
+ - Here we are defining Qimage and Qpath which are important for code in the future
+ ```
+    def clearImage(self):
+        self.path = QPainterPath()
+        self.image.fill(Qt.black)
+        self.update()
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.drawImage(event.rect(), self.image, self.rect())
+        
+    def mouseMoveEvent(self, event):
+        self.path.lineTo(event.pos())
+        p = QPainter(self.image)
+        p.setPen(QPen(self.myPenColor, self.myPenWidth, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+        p.drawPath(self.path)
+        p.end()
+        self.update()
+```
+- Here in clearImage, self.image is used to refer to the background and self.path is being reset. self.update is a function from the parent class that has been inherited.
+- In mouseMoveEvent self.path is used to create a line when the user is drawing
