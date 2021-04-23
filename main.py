@@ -27,7 +27,7 @@ import PIL.ImageOps
 
 
 # Global Variables for Linux/UNIX
-resourcepath = os.getcwd() + "/resources/"
+resources = home + '/resources/'
 csspath = os.getcwd() + "/styles.css"
 path = os.getcwd() + "/saved/"
 
@@ -36,7 +36,6 @@ path = os.getcwd() + "/saved/"
 control = "¦p"
 backgroundcolor = "#171717"
 home = os.getcwd()
-resources = home + '\\Resources¦'
 currentDocument = ('Untitled',os.getcwd())
 
 
