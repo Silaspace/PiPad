@@ -66,4 +66,37 @@ backgroundcolor = "#171717"
         self.update()
 ```
 - Here in clearImage, self.image is used to refer to the background and self.path is being reset. self.update is a function from the parent class that has been inherited.
-- In mouseMoveEvent self.path is used to create a line when the user is drawing
+- In mouseMoveEvent self.path is used to create a line when the user is drawing.
+# Input functions
+```
+        buffer = QBuffer()
+        buffer.open(QIODevice.ReadWrite)
+        self.canvas.image.save(buffer, "png")
+        data = BytesIO(buffer.data())
+        buffer.close()
+```
+- Here this code has been wrote to turn whats been applied to the canvas into a png format so it can be manipulated.
+```
+        img = Image.open(data)
+        img = PIL.ImageOps.invert(img)
+        thresh = 200
+        fn = lambda x : 255 if x > thresh else 0
+        img = img.convert('L').point(fn, mode='1')
+```
+- Here is the beginning of some of the optimisations we have applied to our program so that the software is as efficient as possible.
+- This just turns the png of the canvas into a monochrome format so that any coloured inputs can be used in optimistation
+```
+        crop = img.crop((x3,y3,x4,y4))
+```
+- This crops the canvas image, that is going to be used by the AI, so that all white parts of the image are removed as its not needed. Originally we had thought of doing this by using vectors to find maximum and minimum boundarys for the image but this caused unwanted problems. We ended up obtaining specific co-ordiantes for our image to be cropped to because it was most reliable.
+```
+        text = pytesseract.image_to_string(crop, config ='--psm 10')
+```
+- This is where we decided to use pytesseract for our character recogntion and conversion.
+```
+        self.pages[self.display.currentIndex()].insertPlainText(text.strip())
+        self.canvas.clearImage()
+```
+- This code is needed to reset the canvas after the conversion has been processed
+# Save/Load Functions
+
