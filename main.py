@@ -300,12 +300,12 @@ class MainWindow(QtWidgets.QMainWindow): # Inherits goodies from QMainWIndow
         self.toolbar.addAction(self.nextPageButton)
 
         # Button takes you to the last page
-        self.lastPageButton = QAction(QIcon('LastPageIconInv.png'),'Previous page',self)
+        self.lastPageButton = QAction(QIcon('InvalidLastPageIcon.png'),'Previous page',self)
         self.lastPageButton.triggered.connect(self.LastPage)
         self.toolbar.addAction(self.lastPageButton)
 
         # Button deletes current page
-        self.deletePageButton = QAction(QIcon('DeletePageIcon.png'),'Delete Page',self)
+        self.deletePageButton = QAction(QIcon('BinIcon.png'),'Delete Page',self)
         self.deletePageButton.triggered.connect(self.DeletePage)
         self.toolbar.addAction(self.deletePageButton)
 
@@ -331,7 +331,7 @@ class MainWindow(QtWidgets.QMainWindow): # Inherits goodies from QMainWIndow
         self.toolbar.addAction(self.interpretButton)
 
         # Swaps from handwriting input to keyboard
-        self.boardSwitchButton = QAction(QIcon('SwapInputIcon.png'),'Swap Input', self)
+        self.boardSwitchButton = QAction(QIcon('KeyboardIcon.png'),'Swap Input', self)
         self.boardSwitchButton.triggered.connect(self.BoardSwitch)
         self.toolbar.addAction(self.boardSwitchButton)
 
@@ -361,7 +361,7 @@ class MainWindow(QtWidgets.QMainWindow): # Inherits goodies from QMainWIndow
         self.toolbar.addAction(self.saveAsButton)
 
         # Opens file browser
-        self.loadButton = QAction(QIcon('BrowseFilesIcon.png'),'Browse Files', self)
+        self.loadButton = QAction(QIcon('FileIcon.png'),'Browse Files', self)
         self.loadButton.triggered.connect(self.LoadNotes)
         self.toolbar.addAction(self.loadButton)
         
@@ -725,7 +725,7 @@ If SelectFile is false (target is a location), files cannot be opened.'''
         toolbar = QtWidgets.QToolBar()
         layout.addWidget(toolbar)
         # Button to toggle between delete and open modes
-        ModeToggle = QAction(QIcon('DeleteIcon.png'),'Delete',self)
+        ModeToggle = QAction(QIcon('BinIcon.png'),'Delete',self)
         ModeToggle.triggered.connect(self.toggleMode)
         ModeToggle.setCheckable(True)
         toolbar.addAction(ModeToggle)
@@ -734,11 +734,11 @@ If SelectFile is false (target is a location), files cannot be opened.'''
         self.BackButton.triggered.connect(self.backFile)
         toolbar.addAction(self.BackButton)
         # Button to make a new folder
-        NewFolderButton = QAction(QIcon('NewFolderIcon.png'),'New Folder',self)
+        NewFolderButton = QAction(QIcon('FileIcon.png'),'New Folder',self)
         NewFolderButton.triggered.connect(self.newDir)
         toolbar.addAction(NewFolderButton)
         # Button to make a new file (loaded automatically in the main editor)
-        NewFileButton = QAction(QIcon('NewFileIcon.png'),'NewFileIcon.png',self)
+        NewFileButton = QAction(QIcon('NewPageIcon.png'),'NewFileIcon.png',self)
         NewFileButton.triggered.connect(self.newFile)
         toolbar.addAction(NewFileButton)
         
