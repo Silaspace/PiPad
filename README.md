@@ -20,7 +20,7 @@ from PIL import Image
 from io import BytesIO
 import PIL.ImageOps
 ```
- - Here pytesseract is imported which is what is used for converting handwriting to text. We Have been experimenting with different ways to use AI to read handwriting and we have tried creating a neural network ouserselves. However, we found that the most effecient and effective way was using pytesseract as it saved us time to focus on other crucial parts of code that needed construction or completion.
+ - Here pytesseract is imported which is what is used for converting handwriting to text. We have been experimenting with different ways to use AI to read handwriting and we have tried creating a neural network ouserselves. However, we found that the most effecient and effective way was using pytesseract as it saved us time to focus on other crucial parts of code that needed construction or completion.
 ```
 #resourcepath = "Z:\PiPad-main\PiPad-main\\resources"
 #csspath = "Z:\PiPad-main\PiPad-main\styles.css"
@@ -92,11 +92,66 @@ backgroundcolor = "#171717"
 ```
         text = pytesseract.image_to_string(crop, config ='--psm 10')
 ```
-- This is where we decided to use pytesseract for our character recogntion and conversion.
+- This is where we decided to use pytesseract for our character recogntion and conversion. We had tried different configuration options and came to the concliusion that psm 10 works the best for our purposes as it performed the best when attempting character recognition.
 ```
         self.pages[self.display.currentIndex()].insertPlainText(text.strip())
         self.canvas.clearImage()
 ```
 - This code is needed to reset the canvas after the conversion has been processed
+# Delete Notes
+```
+        for i in range(len(self.saveNoteButtons)):
+            self.saveNoteButtons.pop(0).deleteLater()
+```
+- If the user chooses to delete saved notes then this function will do that for them to make the experience even more convenient.
 # Save/Load Functions
-
+- The program has a save/load fuction so that drawings and/or notes can be saved so that they can be edited and revisited.
+```
+        dlg = SelectionDialog(self,False)
+        if dlg.exec_():
+```
+- Here in (SaveNotesAs) we are enabling the user to choose where to save the file.
+```
+                if fname in os.listdir(os.getcwd()):
+                    dlg3 = ConfirmationDialog(self,name+' already exists. Overwrite it?')
+                    if dlg3.exec_():
+```
+- They can also overwite files as notes may need to be modified. These are all necessary functions for an ideal school or workplace device and we chose to have this increased functionality in the product to ensure it could provide near as much help as current products but for a fraction of the price.
+```
+        self.deleteNotes()
+        self.addNotes()
+```
+- To refresh the notes once one has been added or removed the current notes are all deleted and replaced with the new ones.
+- The user ias also notified when a file has been saved so as to make their experience as fluent as possible.
+# The Keybaord
+- The keybaord is an on-screen display so no external devices are needed to function the raspberry Pi.
+```
+        super().__init__()
+        self.setSizeConstraint(QtWidgets.QLayout.SetNoConstraint)
+        self.stacked = Stacked
+        self.keys = {}
+        self.display = display
+        self.rackStack = rackStack
+```
+ - setSizeConstraint is used because without it the keyboard doesnt correctly fit the display.
+ - rackstack is used so that when the user presses shift it can swich between the keybaords one which has lower case and the other being upper case characters.
+```
+        if Shift:
+            KeysToAdd = (['!','"','£','$','%','^','&&','*','(',')','_','+'],
+                        'QWERTYUIOP{}',
+                        'ASDFGHJKL:@~',
+                        '|ZXCVBNM<>?¬')
+        else:
+            KeysToAdd = ('1234567890-=',
+                         'qwertyuiop[]',
+                         "asdfghjkl;'#",
+                         '\zxcvbnm,./`')
+```
+- Here we are just declaring the charcters that will be used for both keybards by using a list within lists where each new sub-list is a new row on the keybaord.
+```
+        for num, key in enumerate(['Shift','Space','Backspace']):
+            self.keys[key] = QtWidgets.QPushButton(key)
+            self.keys[key].setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+            self.addWidget(self.keys[key], 4, 4*(num), 1, 4)
+```
+- 
