@@ -26,17 +26,18 @@ import PIL.ImageOps
 #path = "Z:\PiPad-main\PiPad-main\saved\\"
 
 
-# Global Variables for Linux/UNIX
-resources = home + '/resources/'
-csspath = os.getcwd() + "/styles.css"
-path = os.getcwd() + "/saved/"
-
-
 # OS independant globals
 control = "¦p"
 backgroundcolor = "#171717"
 home = os.getcwd()
 currentDocument = ('Untitled',os.getcwd())
+
+
+# Global Variables for Linux/UNIX
+resources = home + '/resources¦/'
+csspath = os.getcwd() + "/styles.css"
+path = os.getcwd() + "/saved/"
+
 
 
 
