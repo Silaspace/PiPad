@@ -12,7 +12,7 @@ from PyQt5.QtCore import Qt, QIODevice, QBuffer
 from PyQt5.QtGui import QIcon, QImage, QPainter, QPainterPath, QPen
 from PyQt5.QtWidgets import QTextEdit, QMainWindow, QAction, QApplication, QToolBar, QSizePolicy, QSpacerItem
 ```
- - These are the imports from PyQt5 which are needed for the majority of the UserInterface code. We decided on using PyQt5 because it is widespread and relatively easy to use and a great choice for the UI we needed to make.
+ - These are the imports from PyQt5 which are needed for the majority of the UserInterface code. We decided on using PyQt5 because it is wide-spread and relatively easy to use and a great choice for the UI we needed to make.
 
 ```
 import pytesseract
@@ -75,7 +75,7 @@ backgroundcolor = "#171717"
         data = BytesIO(buffer.data())
         buffer.close()
 ```
-- Here this code has been wrote to turn whats been applied to the canvas into a png format so it can be manipulated.
+- Here this code has been wrote to turn whats been applied to the canvas into a PNG format so it can be manipulated.
 ```
         img = Image.open(data)
         img = PIL.ImageOps.invert(img)
@@ -92,7 +92,7 @@ backgroundcolor = "#171717"
 ```
         text = pytesseract.image_to_string(crop, config ='--psm 10')
 ```
-- This is where we decided to use pytesseract for our character recogntion and conversion. We had tried different configuration options and came to the concliusion that psm 10 works the best for our purposes as it performed the best when attempting character recognition.
+- This is where we decided to use Pytesseract for our character recogntion and conversion. We had tried different configuration options and came to the concliusion that psm 10 works the best for our purposes as it performed the best when attempting character recognition.
 ```
         self.pages[self.display.currentIndex()].insertPlainText(text.strip())
         self.canvas.clearImage()
@@ -121,10 +121,10 @@ backgroundcolor = "#171717"
         self.deleteNotes()
         self.addNotes()
 ```
-- To refresh the notes once one has been added or removed the current notes are all deleted and replaced with the new ones.
-- The user ias also notified when a file has been saved so as to make their experience as fluent as possible.
-# The Keybaord
-- The keybaord is an on-screen display so no external devices are needed to function the raspberry Pi.
+- To refresh the notes once one has been added or removed, the current notes are all deleted and replaced with the new ones.
+- The user is also notified when a file has been saved so as to make their experience as fluent as possible.
+# The Keyboard
+- The keyboard is an on-screen display so no external devices are needed to function the raspberry Pi.
 ```
         super().__init__()
         self.setSizeConstraint(QtWidgets.QLayout.SetNoConstraint)
@@ -134,7 +134,7 @@ backgroundcolor = "#171717"
         self.rackStack = rackStack
 ```
  - setSizeConstraint is used because without it the keyboard doesnt correctly fit the display.
- - rackstack is used so that when the user presses shift it can swich between the keybaords one which has lower case and the other being upper case characters.
+ - rackstack is used so that when the user presses shift it can swich between the keyboards one which has lower case and the other being upper case characters.
 ```
         if Shift:
             KeysToAdd = (['!','"','£','$','%','^','&&','*','(',')','_','+'],
@@ -147,14 +147,14 @@ backgroundcolor = "#171717"
                          "asdfghjkl;'#",
                          '\zxcvbnm,./`')
 ```
-- Here we are just declaring the charcters that will be used for both keybards by using a list within lists where each new sub-list is a new row on the keybaord.
+- Here we are just declaring the charcters that will be used for both keyboards by using a list within lists where each new sub-list is a new row on the keyboard.
 ```
         for colNum, key in enumerate(keyRow):
             self.keys[key] = QtWidgets.QPushButton(key)
             self.keys[key].setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
             self.addWidget(self.keys[key], rowNum, colNum)
 ```
-- Here is part of the code that takes care of enlarging the buttons in relationship to the size of the window so that the keybaord can be as optimal as possible for the users inentions.
+- Here is part of the code that takes care of enlarging the buttons in relationship to the size of the window so that the keyboard can be as optimal as possible for the users inentions.
 ```
         DanOrange = self.display.currentWidget() if self.stacked else self.display
         DanOrange.insertPlainText(control)
@@ -173,4 +173,4 @@ backgroundcolor = "#171717"
         else:
             self.rackStack.setCurrentIndex(1)
 ```
-- This is how the keybaord switches to a CAPS keybaord when the Shift key is pressed by the user so that they have full access the a wide range of options for creating and addiing to or editing files.
+- This is how the keyboard switches to a CAPS keybaord when the Shift key is pressed by the user so that they have full access the a wide range of options for creating and addiing to or editing files.
