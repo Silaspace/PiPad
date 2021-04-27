@@ -149,9 +149,28 @@ backgroundcolor = "#171717"
 ```
 - Here we are just declaring the charcters that will be used for both keybards by using a list within lists where each new sub-list is a new row on the keybaord.
 ```
-        for num, key in enumerate(['Shift','Space','Backspace']):
+        for colNum, key in enumerate(keyRow):
             self.keys[key] = QtWidgets.QPushButton(key)
             self.keys[key].setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
-            self.addWidget(self.keys[key], 4, 4*(num), 1, 4)
+            self.addWidget(self.keys[key], rowNum, colNum)
 ```
-- 
+- Here is part of the code that takes care of enlarging the buttons in relationship to the size of the window so that the keybaord can be as optimal as possible for the users inentions.
+```
+        DanOrange = self.display.currentWidget() if self.stacked else self.display
+        DanOrange.insertPlainText(control)
+        text = DanOrange.toPlainText()
+        delpos = text.find(control)
+        if delpos != 0:
+            DanOrange.setPlainText(text[delpos+len(control):])
+            DanOrange.insertPlainText(text[:delpos-1])
+        else:
+            DanOrange.setPlainText(text[len(control):])
+```
+- Here is the code for deleting character which we have added to our project as a function withing the application so that file editing is simple and any mistakes can be corrected easily.
+```
+        if self.rackStack.currentIndex() == 1:
+            self.rackStack.setCurrentIndex(2 if self.stacked else 0)
+        else:
+            self.rackStack.setCurrentIndex(1)
+```
+- This is how the keybaord switches to a CAPS keybaord when the Shift key is pressed by the user so that they have full access the a wide range of options for creating and addiing to or editing files.
