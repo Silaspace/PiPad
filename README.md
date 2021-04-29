@@ -1,5 +1,9 @@
 # PiPad
 
+The PiPad project is designed to turn a Raspberry Pi into a fully functional note-taking device designed for use in schools, universites, offices and even at home! Below is an explanation of the code that should comprehensively cover everything you need to know in order to use, modify and port the code.
+
+
+
  ## Imports and Globals
  ```
  import sys, os, math, time
