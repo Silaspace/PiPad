@@ -16,7 +16,7 @@ The PiPad project is designed to turn a Raspberry Pi into a fully functional not
  from PyQt5.QtGui import QIcon, QImage, QPainter, QPainterPath, QPen
  from PyQt5.QtWidgets import QTextEdit, QMainWindow, QAction, QApplication, QToolBar, QSizePolicy, QSpacerItem
  ```
-  - These are the imports from PyQt5 which are needed for the majority of the UserInterface code. We decided on using PyQt5 because it is wide-spread and relatively easy to use and a great choice for the UI we needed to make.
+  - These are the imports from PyQt5 which are needed for the majority of the UserInterface code. We decided on using PyQt5 because it is cross-platform, easy to use and has plenty of tutorial content to learn from.
 
  ```
  import pytesseract
@@ -24,25 +24,21 @@ The PiPad project is designed to turn a Raspberry Pi into a fully functional not
  from io import BytesIO
  import PIL.ImageOps
  ```
-  - Here pytesseract is imported which is what is used for converting handwriting to text. We have been experimenting with different ways to use AI to read handwriting and we have tried creating a neural network ouserselves. However, we found that the most effecient and effective way was using pytesseract as it saved us time to focus on other crucial parts of code that needed construction or completion.
+  - Pytesseract is what we chose to use for converting handwriting to text. We had been experimenting with different ways to use ML to read handwriting and we have tried creating a neural network ouserselves. However, we found that the most effecient and effective way was using tesseract and pytesseract, as it saved us time to focus on other crucial parts of code that needed more attention.
  ```
  #resourcepath = "Z:\PiPad-main\PiPad-main\\resources"
  #csspath = "Z:\PiPad-main\PiPad-main\styles.css"
  #path = "Z:\PiPad-main\PiPad-main\saved\\"
  ```
-  - These are global variables for Windows because we are using Windows machines to develop and design the code.
+  - These are the global variables for Windows; as we are using Windows machines to develop the code.
 
  ```
  resourcepath = os.getcwd() + "/resources/"
  csspath = os.getcwd() + "/styles.css"
  path = os.getcwd() + "/saved/"
  ```
-  - These are global variables for linux which we have chosen to use as the OS for our Raspberry Pi.
+  - These are global variables for UNIX systems, as we're running Linux on our Raspberry Pi.
 
- ```
- control = "~"
- backgroundcolor = "#171717"
- ```
  # Canvas
   - The "canvas" is what the user will use to write on.
 
@@ -50,7 +46,7 @@ The PiPad project is designed to turn a Raspberry Pi into a fully functional not
          self.image = QImage(1200, 300, QImage.Format_RGB32)
          self.path = QPainterPath()
   ```
-  - Here we are defining Qimage and Qpath which are important for code in the future
+  - Here we are defining Qimage, our canvas background; and Qpath, an object that can store the cursor movements.
   ```
      def clearImage(self):
          self.path = QPainterPath()
@@ -79,7 +75,7 @@ The PiPad project is designed to turn a Raspberry Pi into a fully functional not
          data = BytesIO(buffer.data())
          buffer.close()
  ```
- - Here this code has been wrote to turn whats been applied to the canvas into a PNG format so it can be manipulated.
+ - This code turns the canvas into a PNG image so it can be manipulated using pillow.
  ```
          img = Image.open(data)
          img = PIL.ImageOps.invert(img)
@@ -102,6 +98,7 @@ The PiPad project is designed to turn a Raspberry Pi into a fully functional not
          self.canvas.clearImage()
  ```
  - This code is needed to reset the canvas after the conversion has been processed
+ 
  # Delete Notes
  ```
          for i in range(len(self.saveNoteButtons)):
