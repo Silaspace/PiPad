@@ -35,14 +35,10 @@ MainWindow {
    color: #fff;
  }
 
- QWidget#bruij {
-   border: 1px solid red;
-   border-radius: 10px;
- }
 
  QToolBar {
    border: 1px solid #171717;
-   background-color: fff;
+   background-color: #171717;
  }
 
 
@@ -54,9 +50,9 @@ MainWindow {
  }
 
  QPushButton:hover {
-   background: #3b3b3b;
+   background: #242424;
  }
 
  QPushButton:pressed {
-   background: #8f8f8f;
+   background: #242424;
  }
