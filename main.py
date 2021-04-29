@@ -790,8 +790,14 @@ Setting dirname means the function changes directory before listing'''
         fileList = os.listdir(current)
 
         # Hides the PiPad resources file. User cannot input ¦, so no issue with inputted file names.
-        if 'Resources¦' in fileList:
-            fileList.remove('Resources¦')
+        if 'resources¦' in fileList:
+            fileList.remove('resources¦')
+            
+        if 'main.py' in fileList:
+          fileList.remove('main.py')
+          
+        if 'styles.css' in fileList:
+          fileList.remove('styles.css')
 
         # Prepares to sort contents of CWD
         (dirList, txtList) = ([],[])
