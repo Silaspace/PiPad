@@ -593,7 +593,9 @@ If fileName is not False, selection is skipped and the given file is loaded'''
             # Replace current document
             self.pages.append(newpages[0])                  #Set up page 1 (for visuals)
             self.display.addWidget(newpages[0])             #
+            bugfix = os.getcwd()
             self.display.setCurrentWidget(newpages.pop(0))  #
+            os.chdir(bugfix)
             for i in range(1,len(self.pages)):                #Remove previous pages
                 self.display.removeWidget(self.pages.pop(0))  #
             if len(newpages) >= 1:                    #Add the rest of the new pages
