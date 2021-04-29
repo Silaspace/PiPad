@@ -1,59 +1,62 @@
 MainWindow {
-  background-color: #171717;
-}
+   background-color: #171717;
+ }
 
-Keyboard {
-  background-color: #171717;
-}
+ Keyboard {
+   background-color: #171717;
+ }
 
-QLabel {
-  font-size: 12px;
-  padding: 10px;
-}
-
-
-
-
-
-QTextEdit {
-  font-family: sans-serif;
-  border: 1px solid #eeeeee;
-  color: #eeeeee;
-  font-size: 12px;
-}
-
-QTextEdit:hover {
-  background: #242424;
-}
+ QLabel {
+   font-size: 12px;
+   padding: 10px;
+ }
 
 
 
 
 
-QWidget {
-  background: #171717;
-  color: #fff;
-}
+ QTextEdit {
+   font-family: sans-serif;
+   border: 1px solid #eeeeee;
+   color: #eeeeee;
+   font-size: 12px;
+ }
 
-QWidget#bruij {
-  border: 1px solid red;
-  border-radius: 10px;
-}
-
-
-
+ QTextEdit:hover {
+   background: #242424;
+ }
 
 
-QPushButton {
-  background: #171717;
-  border-radius: 0px;
-  font-size: 16px;
-}
 
-QPushButton:hover {
-  background: #3b3b3b;
-}
 
-QPushButton:pressed {
-  background: #8f8f8f;
-}
+
+ QWidget {
+   background: #171717;
+   color: #fff;
+ }
+
+ QWidget#bruij {
+   border: 1px solid red;
+   border-radius: 10px;
+ }
+
+ QToolBar {
+   border: 1px solid #171717;
+   background-color: fff;
+ }
+
+
+
+ QPushButton {
+   background: #171717;
+   border-radius: 0px;
+   font-size: 16px;
+ }
+
+ QPushButton:hover {
+   background: #3b3b3b;
+ }
+
+ QPushButton:pressed {
+   background: #8f8f8f;
+ }
